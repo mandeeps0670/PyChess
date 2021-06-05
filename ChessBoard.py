@@ -1,29 +1,21 @@
 import pygame
 import os
 import numpy as np
+from pygame.constants import MOUSEBUTTONDOWN
 from settings import *
 from ChessPiece import typepiece
 
-#setting_init()
+# setting_init()
 
 
-FPS = 30
-drk_sq = 	(118,150,86)
-light_sq = 	(238,238,210)
-
+FPS = 15
+drk_sq = (118, 150, 86)
+light_sq = (238, 238, 210)
 
 pygame.init()
-#init()
 
+piece_selected = None
 
-
-white_pieces = pygame.sprite.Group()
-black_pieces = pygame.sprite.Group()
-
-
-
-screen = pygame.display.set_mode((WIDTH,HEIGHT))
-   
 
 def initialiseboard():
     file = 7
@@ -31,55 +23,67 @@ def initialiseboard():
     for piece in FEN:
         if piece == '/':
             rank = 0
-            file -=1
+            file -= 1
         elif piece.isdigit():
             rank += int(piece)
         else:
-            rank+=1
-            location = (rank,file)
+
+            location = (rank, file)
 
             if piece.isupper():
-                white_pieces.add(typepiece(piece,location))
+                white_pieces.add(typepiece(piece, location))
+                piecearray[rank, file] = 1
             else:
-                black_pieces.add(typepiece(piece,location))
-
+                black_pieces.add(typepiece(piece, location))
+                piecearray[rank, file] = -1
+            rank += 1
 
 
 def drawboard():
-    screen.fill((30,30,30))
+    screen.fill((30, 30, 30))
     for i in range(8):
         for j in range(8):
-            if (i+j)%2 == 1:
-                pygame.draw.rect(screen,drk_sq,[LEFTGAP + i*BOARDSQ, BORDER+j*BOARDSQ , BOARDSQ,BOARDSQ])
+            if (i + j) % 2 == 1:
+                pygame.draw.rect(screen, drk_sq, [LEFTGAP + i * BOARDSQ, BORDER + j * BOARDSQ, BOARDSQ, BOARDSQ])
             else:
-                pygame.draw.rect(screen,light_sq,[LEFTGAP + i*BOARDSQ, BORDER+j*BOARDSQ , BOARDSQ,BOARDSQ])
+                pygame.draw.rect(screen, light_sq, [LEFTGAP + i * BOARDSQ, BORDER + j * BOARDSQ, BOARDSQ, BOARDSQ])
 
 
+pygame.display.set_caption("Lets Play Chess")
 
-
-pygame.display.set_caption("Lets Play Chess") 
 
 def main():
     run = True
     clock = pygame.time.Clock()
     drawboard()
     initialiseboard()
-    #drawpiece()
+    # drawpiece()
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                for selects in selectionbrd:
+                    if selects.rect.collidepoint(event.pos):
+                        piece_selected.update(selects.location)
+                selectionbrd.empty()
+                for whitepiece in white_pieces:
+                    if whitepiece.rect.collidepoint(event.pos):
+                        piece_selected = whitepiece
+                        whitepiece.draw_possible_moves()
+
+
+        drawboard()
+        selectionbrd.draw(screen)
+
         white_pieces.draw(screen)
         black_pieces.draw(screen)
-        
-        
+
         pygame.display.update()
-        
-                
+
     pygame.quit()
-        
-        
-        
+
+
 if __name__ == "__main__":
     main()
