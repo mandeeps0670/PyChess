@@ -17,6 +17,21 @@ pygame.init()
 piece_selected = None
 
 
+
+def pieceval(piece):
+    if piece == 'p' or piece == 'P':
+        return 1
+    elif piece == 'n' or piece == 'N':
+        return 3
+    elif piece == 'b' or piece == 'B':
+        return 3
+    elif piece == 'r' or piece == 'R':
+        return 5
+    elif piece == 'q' or piece == 'Q':
+        return 9
+    elif piece == 'k' or piece == 'K':
+        return 100
+
 def initialiseboard():
     file = 7
     rank = 0
@@ -28,14 +43,14 @@ def initialiseboard():
             rank += int(piece)
         else:
 
-            location = (rank, file)
+            location = np.array([rank, file])
 
             if piece.isupper():
                 white_pieces.add(typepiece(piece, location))
-                piecearray[rank, file] = 1
+                piecearray[tuple(location)] = pieceval(piece)
             else:
                 black_pieces.add(typepiece(piece, location))
-                piecearray[rank, file] = -1
+                piecearray[tuple(location)] = -1*pieceval(piece)
             rank += 1
 
 
