@@ -1,36 +1,53 @@
+
 import pygame
 import os
 import numpy as np
 from pygame.constants import MOUSEBUTTONDOWN
+
+import settings
 from settings import *
-from ChessPiece import typepiece
+from ChessPiece import typepiece, possible_move
 
-# setting_init()
 
+#setting_init()
+def pieceval(piece):
+    if piece.isupper():
+        if piece == 'P':
+            return 100
+        elif piece == 'N':
+            return 302
+        elif piece == 'B':
+            return 300
+        elif piece ==  'R':
+            return 501
+        elif piece == 'Q':
+            return 900
+        elif piece == 'K':
+            return 1001
+    else:
+        if piece == 'p':
+            return -100
+        elif piece == 'n' :
+            return -302
+        elif piece == 'b' :
+            return -300
+        elif piece == 'r':
+            return -501
+        elif piece == 'q':
+            return -900
+        elif piece == 'k':
+            return -1001
 
 FPS = 15
 drk_sq = (118, 150, 86)
 light_sq = (238, 238, 210)
-
+flag = 0
 pygame.init()
 
 piece_selected = None
 
+moves
 
-
-def pieceval(piece):
-    if piece == 'p' or piece == 'P':
-        return 1
-    elif piece == 'n' or piece == 'N':
-        return 3
-    elif piece == 'b' or piece == 'B':
-        return 3
-    elif piece == 'r' or piece == 'R':
-        return 5
-    elif piece == 'q' or piece == 'Q':
-        return 9
-    elif piece == 'k' or piece == 'K':
-        return 100
 
 def initialiseboard():
     file = 7
@@ -47,10 +64,9 @@ def initialiseboard():
 
             if piece.isupper():
                 white_pieces.add(typepiece(piece, location))
-                piecearray[tuple(location)] = pieceval(piece)
             else:
                 black_pieces.add(typepiece(piece, location))
-                piecearray[tuple(location)] = -1*pieceval(piece)
+            piecearray[tuple(location)] = pieceval(piece)
             rank += 1
 
 
@@ -63,11 +79,18 @@ def drawboard():
             else:
                 pygame.draw.rect(screen, light_sq, [LEFTGAP + i * BOARDSQ, BORDER + j * BOARDSQ, BOARDSQ, BOARDSQ])
 
+def draw_possible_moves():
+    for move in moves_array:
+        selectionbrd.add(possible_move(move))
+
+
 
 pygame.display.set_caption("Lets Play Chess")
 
-
+moves
 def main():
+    settings.moves
+    #moves = 0
     run = True
     clock = pygame.time.Clock()
     drawboard()
@@ -79,14 +102,20 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
+
                 for selects in selectionbrd:
                     if selects.rect.collidepoint(event.pos):
+                        print(piece_selected.type)
                         piece_selected.update(selects.location)
+                        settings.moves += 1
+                        print(piecearray)
                 selectionbrd.empty()
-                for whitepiece in white_pieces:
-                    if whitepiece.rect.collidepoint(event.pos):
-                        piece_selected = whitepiece
-                        whitepiece.draw_possible_moves()
+                for piece in piece_group[settings.moves % 2]:
+                    if piece.rect.collidepoint(event.pos):
+                        piece_selected = piece
+                        piece.get_moves()
+                        draw_possible_moves()
+
 
 
         drawboard()
