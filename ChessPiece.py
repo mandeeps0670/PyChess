@@ -90,6 +90,36 @@ def respriteboard():
                 else:
                     piece_group[1].add(typepiece(piece, location))
 
+def makepseudomove(locn_old,locn_new):
+    temp_attack_array.fill(0)
+    pieceval = piecearray[tuple(locn_old)]
+    attackval = piecearray[tuple(locn_new)]
+    piecearray[tuple(locn_old)] = 0
+    piecearray[tuple(locn_new)] = pieceval
+    for i in range(8):
+        for j in range(8):
+            if piecearray[i,j]*np.sign(pieceval) < 0:
+                attackCalc(temp_attack_array, np.array([i,j]))
+            elif piecearray[i,j]* np.sign(pieceval) > 0 and (abs(piecearray[i,j]) == 1000 or abs(piecearray[i,j]) == 1001) :
+                king_locn = (i,j)
+    print(piecearray)
+    print(temp_attack_array)
+    piecearray[tuple(locn_old)]= pieceval
+    piecearray[tuple(locn_new)] = attackval
+    print(piecearray)
+
+
+    if temp_attack_array[king_locn] != 0:
+        return False
+    else:
+        return True
+
+
+
+
+
+
+
 class typepiece(pygame.sprite.Sprite):
 
     def __init__(self, type, location):
@@ -151,55 +181,61 @@ class typepiece(pygame.sprite.Sprite):
                 [2, 1], [-2, 1], [-2, -1], [2, -1], [
                     1, 2], [-1, 2], [-1, -2], [1, -2]])
 
-    def get_moves(self):
-        moves_array.clear()
+    def get_moves(self,arr):
 
-        if self.type == 'P':
-
-            move = self.moves[0]
-            ## move pawn 1 forward
-
-            if inbrd(self.location + move) and piecearray[tuple(self.location + move)] == 0:
-                moves_array.append(self.location + move)
-
-            ## move 2 forward
-            if self.location[1] == 1 and piecearray[tuple(self.location + 2 * move)] == 0 and piecearray[
-                tuple(self.location + move)] == 0:
-                moves_array.append(self.location + 2 * move)
-
-            ## move sideways
-            if inbrd(self.location + move) and inbrd(self.location + self.movespl[0]) and piecearray[
-                tuple(self.location + self.movespl[0])] < 0:
-                moves_array.append(self.location + self.movespl[0])
-
-            ## move sideways
-            if inbrd(self.location + move) and inbrd(self.location + self.movespl[1]) and piecearray[
-                tuple(self.location + self.movespl[1])] < 0:
-                moves_array.append(self.location + self.movespl[1])
-
-
-        elif self.type == 'p':
+        if self.type == 'P' or self.type == 'p':
 
             move = self.moves[0]
             ## move pawn 1 forward
 
             if inbrd(self.location + move) and piecearray[tuple(self.location + move)] == 0:
-                moves_array.append(self.location + move)
+                if makepseudomove(self.location,self.location+move):
+                    arr.append(self.location + move)
 
             ## move 2 forward
-            if self.location[1] == 6 and piecearray[tuple(self.location + 2 * move)] == 0 and piecearray[
+            if self.location[1] == 1 and self.type =='P' and piecearray[tuple(self.location + 2 * move)] == 0 and piecearray[
                 tuple(self.location + move)] == 0:
-                moves_array.append(self.location + 2 * move)
+                if makepseudomove(self.location, self.location +2 * move):
+                    arr.append(self.location + 2 * move)
+
+            if self.location[1] == 6 and self.type =='p' and piecearray[tuple(self.location + 2 * move)] == 0 and piecearray[
+                tuple(self.location + move)] == 0:
+                if makepseudomove(self.location, self.location +2 * move):
+                    arr.append(self.location + 2 * move)
 
             ## move sideways
-            if inbrd(self.location + move) and inbrd(
-                    self.location + self.movespl[0]) and piecearray[tuple(self.location + self.movespl[0])] > 0 :
-                moves_array.append(self.location + self.movespl[0])
+            if inbrd(self.location + self.movespl[0]) and piecearray[tuple(self.location + self.movespl[0])] < 0:
+                if makepseudomove(self.location, self.location + self.movespl[0]):
+                    arr.append(self.location + self.movespl[0])
 
             ## move sideways
-            if inbrd(self.location + move) and inbrd(
-                    self.location + self.movespl[1]) and piecearray[tuple(self.location + self.movespl[1])] > 0 :
-                moves_array.append(self.location + self.movespl[1])
+            if inbrd(self.location + self.movespl[1]) and piecearray[tuple(self.location + self.movespl[1])] < 0:
+                if makepseudomove(self.location, self.location + self.movespl[1]):
+                    arr.append(self.location + self.movespl[1])
+
+
+        # elif self.type == 'p':
+        #
+        #     move = self.moves[0]
+        #     ## move pawn 1 forward
+        #
+        #     if inbrd(self.location + move) and piecearray[tuple(self.location + move)] == 0:
+        #         arr.append(self.location + move)
+        #
+        #     ## move 2 forward
+        #     if self.location[1] == 6 and piecearray[tuple(self.location + 2 * move)] == 0 and piecearray[
+        #         tuple(self.location + move)] == 0:
+        #         arr.append(self.location + 2 * move)
+        #
+        #     ## move sideways
+        #     if inbrd(self.location + move) and inbrd(
+        #             self.location + self.movespl[0]) and piecearray[tuple(self.location + self.movespl[0])] > 0 :
+        #         arr.append(self.location + self.movespl[0])
+        #
+        #     ## move sideways
+        #     if inbrd(self.location + move) and inbrd(
+        #             self.location + self.movespl[1]) and piecearray[tuple(self.location + self.movespl[1])] > 0 :
+        #         arr.append(self.location + self.movespl[1])
 
         elif self.isInf:
 
@@ -210,11 +246,13 @@ class typepiece(pygame.sprite.Sprite):
                 print(piecearray)
                 while inbrd(self.location + k * move) and piecearray[tuple(self.location + k * move)] == 0:
                     print("Hi")
-                    moves_array.append(self.location + k * move)
+                    if makepseudomove(self.location, self.location +  k * move):
+                        arr.append(self.location + k * move)
                     k += 1
                 if inbrd(self.location + k * move) and (piecearray[tuple(self.location + k * move)] * pieceval(
                         self.type)) < 0:
-                    moves_array.append(self.location + k * move)
+                    if makepseudomove(self.location, self.location + k * move):
+                        arr.append(self.location + k * move)
 
         else:
             for move in self.moves:
@@ -224,14 +262,14 @@ class typepiece(pygame.sprite.Sprite):
                 # print(piecearray[tuple(self.location + k*move)])
                 print(piecearray)
                 if inbrd(self.location + move) and piecearray[tuple(self.location + move)] == 0:
-                    moves_array.append(self.location + move)
+                    if makepseudomove(self.location, self.location +  move):
+                        arr.append(self.location + move)
                 elif inbrd(self.location + move) and (piecearray[tuple(self.location + move)] * pieceval(self.type)) < 0:
-                    moves_array.append(self.location + move)
+                    if makepseudomove(self.location, self.location +  move):
 
-        if tuple(self.location) == (0, 0):
-            if piecearray[0, 0] == 4 and piecearray[
-                0, 1] == 0 and piecearray[0, 2] == 0 and piecearray[0, 3] == 0 and piecearray[0, 5] == 101:
-                moves_array.append(np.array([0, 5]))
+                        arr.append(self.location + move)
+
+
 
     def update(self, location):
         piecearray[tuple(self.location)] = 0
@@ -253,3 +291,76 @@ class possible_move(pygame.sprite.Sprite):
         self.image.convert()
         self.rect = self.image.get_rect()
         self.rect.center = globalloc(self.location)
+
+
+
+
+
+def attackCalc(arr,locn):
+    value = piecearray[tuple(locn)]
+    if value == 100:
+        if inbrd(locn + np.array([1,1])) and piecearray[tuple(locn + np.array([1,1]))] <= 0:
+            arr[tuple(locn + np.array([1, 1]))] += 1
+        if inbrd(locn + np.array([-1,1])) and piecearray[tuple(locn + np.array([-1,1]))] <= 0:
+            arr[tuple(locn + np.array([-1, 1]))] += 1
+    elif value == -100:
+        if inbrd(locn + np.array([1,-1])) and piecearray[tuple(locn + np.array([1,-1]))] >= 0:
+            arr[tuple(locn + np.array([1, -1]))] += 1
+        if inbrd(locn + np.array([-1,-1])) and piecearray[tuple(locn + np.array([-1,-1]))] >= 0:
+            arr[tuple(locn + np.array([-1, -1]))] += 1
+
+
+    elif value == 302 or value == -302:
+        moves = np.array([
+            [2, 1], [-2, 1], [-2, -1], [2, -1], [
+                1, 2], [-1, 2], [-1, -2], [1, -2]])
+        for move in moves:
+            if inbrd(locn + move):# and piecearray[tuple(locn + move)]*value <= 0:
+                arr[tuple(locn + move)] += 1
+
+    elif value == 300 or value == -300:
+        moves = np.array([
+            [1, 1], [-1, 1], [-1, -1], [1, -1]])
+        for move in moves:
+            for k in range(1,8):
+                if inbrd(locn + k*move) and piecearray[tuple(locn + k*move)] == 0:
+                    arr[tuple(locn + k*move)] += 1
+                elif inbrd(locn + k*move):# and piecearray[tuple(locn + k*move)] * value < 0:
+                    arr[tuple(locn + k*move)] += 1
+                    break
+                # elif inbrd(locn + k*move) and piecearray[tuple(locn + k*move)] * value > 0:
+                #     break
+    elif value == 500 or value == -500 or value == 501 or value == -501:
+        moves = np.array([
+            [1, 0], [-1, 0], [0, -1], [0, 1]])
+        for move in moves:
+            for k in range(1,8):
+                if inbrd(locn + k*move) and piecearray[tuple(locn + k*move)] == 0:
+                    arr[tuple(locn + k*move)] += 1
+                elif inbrd(locn + k*move):# and piecearray[tuple(locn + k*move)] * value < 0:
+                    arr[tuple(locn + k*move)] += 1
+                    break
+                # elif inbrd(locn + k*move) and piecearray[tuple(locn + k*move)] * value > 0:
+                #     break
+    elif value == 900 or value == -900:
+        moves = np.array([
+            [1, 1], [-1, 1], [-1, -1], [1, -1], [0, -1], [
+                0, 1], [1, 0], [-1, 0]])
+        for move in moves:
+            for k in range(1,8):
+                if inbrd(locn + k*move) and piecearray[tuple(locn + k*move)] == 0:
+                    arr[tuple(locn + k*move)] += 1
+                elif inbrd(locn + k*move):# and piecearray[tuple(locn +k* move)] * value < 0:
+                    arr[tuple(locn + k*move)] += 1
+                    break
+                # elif inbrd(locn + k*move) and piecearray[tuple(locn +k* move)] * value > 0:
+                #     break
+
+    elif value == 1000 or value == -1000 or value == 1001 or value == -1001:
+        moves = np.array([
+            [1, 1], [-1, 1], [-1, -1], [1, -1], [0, -1], [
+                0, 1], [1, 0], [-1, 0]])
+        for move in moves:
+            if inbrd(locn + move) : #and piecearray[tuple(locn + move)] * value <= 0
+                arr[tuple(locn + move)] += 1
+

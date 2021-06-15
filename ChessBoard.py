@@ -113,7 +113,8 @@ def main():
                 for piece in piece_group[settings.moves % 2]:
                     if piece.rect.collidepoint(event.pos):
                         piece_selected = piece
-                        piece.get_moves()
+                        moves_array.clear()
+                        piece.get_moves(moves_array)
                         draw_possible_moves()
 
 
