@@ -183,7 +183,7 @@ class typepiece(pygame.sprite.Sprite):
 
     def get_moves(self,arr):
 
-        if self.type == 'P' or self.type == 'p':
+        if self.type == 'P':
 
             move = self.moves[0]
             ## move pawn 1 forward
@@ -193,15 +193,11 @@ class typepiece(pygame.sprite.Sprite):
                     arr.append(self.location + move)
 
             ## move 2 forward
-            if self.location[1] == 1 and self.type =='P' and piecearray[tuple(self.location + 2 * move)] == 0 and piecearray[
+            if self.location[1] == 1  and piecearray[tuple(self.location + 2 * move)] == 0 and piecearray[
                 tuple(self.location + move)] == 0:
                 if makepseudomove(self.location, self.location +2 * move):
                     arr.append(self.location + 2 * move)
 
-            if self.location[1] == 6 and self.type =='p' and piecearray[tuple(self.location + 2 * move)] == 0 and piecearray[
-                tuple(self.location + move)] == 0:
-                if makepseudomove(self.location, self.location +2 * move):
-                    arr.append(self.location + 2 * move)
 
             ## move sideways
             if inbrd(self.location + self.movespl[0]) and piecearray[tuple(self.location + self.movespl[0])] < 0:
@@ -214,28 +210,31 @@ class typepiece(pygame.sprite.Sprite):
                     arr.append(self.location + self.movespl[1])
 
 
-        # elif self.type == 'p':
-        #
-        #     move = self.moves[0]
-        #     ## move pawn 1 forward
-        #
-        #     if inbrd(self.location + move) and piecearray[tuple(self.location + move)] == 0:
-        #         arr.append(self.location + move)
-        #
-        #     ## move 2 forward
-        #     if self.location[1] == 6 and piecearray[tuple(self.location + 2 * move)] == 0 and piecearray[
-        #         tuple(self.location + move)] == 0:
-        #         arr.append(self.location + 2 * move)
-        #
-        #     ## move sideways
-        #     if inbrd(self.location + move) and inbrd(
-        #             self.location + self.movespl[0]) and piecearray[tuple(self.location + self.movespl[0])] > 0 :
-        #         arr.append(self.location + self.movespl[0])
-        #
-        #     ## move sideways
-        #     if inbrd(self.location + move) and inbrd(
-        #             self.location + self.movespl[1]) and piecearray[tuple(self.location + self.movespl[1])] > 0 :
-        #         arr.append(self.location + self.movespl[1])
+        elif self.type == 'p':
+
+            move = self.moves[0]
+            ## move pawn 1 forward
+
+            if inbrd(self.location + move) and piecearray[tuple(self.location + move)] == 0:
+                if makepseudomove(self.location, self.location + move):
+                    arr.append(self.location + move)
+
+            ## move 2 forward
+            if self.location[1] == 6 and piecearray[tuple(self.location + 2 * move)] == 0 and \
+                    piecearray[
+                        tuple(self.location + move)] == 0:
+                if makepseudomove(self.location, self.location + 2 * move):
+                    arr.append(self.location + 2 * move)
+
+            ## move sideways
+            if inbrd(self.location + self.movespl[0]) and piecearray[tuple(self.location + self.movespl[0])] > 0:
+                if makepseudomove(self.location, self.location + self.movespl[0]):
+                    arr.append(self.location + self.movespl[0])
+
+            ## move sideways
+            if inbrd(self.location + self.movespl[1]) and piecearray[tuple(self.location + self.movespl[1])] > 0:
+                if makepseudomove(self.location, self.location + self.movespl[1]):
+                    arr.append(self.location + self.movespl[1])
 
         elif self.isInf:
 
