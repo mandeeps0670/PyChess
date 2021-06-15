@@ -363,3 +363,23 @@ def attackCalc(arr,locn):
             if inbrd(locn + move) : #and piecearray[tuple(locn + move)] * value <= 0
                 arr[tuple(locn + move)] += 1
 
+
+def isCheckStaleMate():
+    checkmatearray = []
+    king_locn = np.array([0,0])
+    temp_attack_array.fill(0)
+    for piece in piece_group[moves%2]:
+        piece.get_moves(checkmatearray)
+        if len(checkmatearray)>0:
+            return False
+        attackCalc(temp_attack_array,piece.location)
+        if moves%2 == 0 and piece.type == 'K':
+            king_locn = piece.location
+        elif moves%2 == 1 and piece.type == 'k':
+            king_locn = piece.location
+
+    if temp_attack_array[tuple(king_locn)] != 0:
+        return 'C'
+    else:
+        return 'S'
+

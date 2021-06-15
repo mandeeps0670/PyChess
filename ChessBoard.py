@@ -4,6 +4,7 @@ import os
 import numpy as np
 from pygame.constants import MOUSEBUTTONDOWN
 
+import ChessPiece
 import settings
 from settings import *
 from ChessPiece import typepiece, possible_move
@@ -108,6 +109,13 @@ def main():
                         print(piece_selected.type)
                         piece_selected.update(selects.location)
                         settings.moves += 1
+                        t = ChessPiece.isCheckStaleMate()
+                        if t:
+                            if t == 'C':
+                                print("CHeckMate")
+                            else:
+                                print("Stale Mate")
+
                         print(piecearray)
                 selectionbrd.empty()
                 for piece in piece_group[settings.moves % 2]:
