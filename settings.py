@@ -15,6 +15,8 @@ def setting_init():
     global attack_array_w
     global  whiteincheck
     global blackincheck
+    global CHECKMATE
+    CHECKMATE = False
 
     
 
@@ -28,7 +30,9 @@ blackkinglocn = np.array([7,4])
 
 
 moves = 0
-   
+
+
+
 HEIGHT = 720
 WIDTH = 1000
 BORDER = 64
@@ -49,6 +53,11 @@ piece_group = [white_pieces,black_pieces]
 selectionbrd = pygame.sprite.Group()
 
 
+
 moves_array = []
 
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
+
+move_is_castle = False
+
+CHECKMATE = False

@@ -10,7 +10,7 @@ from settings import *
 from ChessPiece import typepiece, possible_move
 
 
-#setting_init()
+
 def pieceval(piece):
     if piece.isupper():
         if piece == 'P':
@@ -47,7 +47,14 @@ pygame.init()
 
 piece_selected = None
 
-moves
+
+font = pygame.font.Font('freesansbold.ttf', 32)
+text = font.render('CHECK MATE', True, (255,0,0),(255,255,0))
+
+
+textRect = text.get_rect()
+
+textRect.center = (WIDTH // 2, HEIGHT // 2)
 
 
 def initialiseboard():
@@ -90,6 +97,7 @@ pygame.display.set_caption("Lets Play Chess")
 
 moves
 def main():
+    CHECKMATE = False
     settings.moves
     #moves = 0
     run = True
@@ -111,8 +119,8 @@ def main():
                         settings.moves += 1
                         t = ChessPiece.isCheckStaleMate()
                         if t:
-                            if t == 'C':
-                                print("CHeckMate")
+                            if t == 10:
+                                CHECKMATE = True
                             else:
                                 print("Stale Mate")
 
@@ -123,6 +131,7 @@ def main():
                         piece_selected = piece
                         moves_array.clear()
                         piece.get_moves(moves_array)
+
                         draw_possible_moves()
 
 
@@ -133,10 +142,15 @@ def main():
         white_pieces.draw(screen)
         black_pieces.draw(screen)
 
+        if CHECKMATE:
+            screen.blit(text, textRect)
+
+
         pygame.display.update()
 
     pygame.quit()
 
 
 if __name__ == "__main__":
+    setting_init()
     main()
