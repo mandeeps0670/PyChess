@@ -40,6 +40,7 @@ BOARDL = HEIGHT - 2*BORDER
 BOARDSQ = BOARDL/8         
 LEFTGAP = (WIDTH-BOARDL)/2
 FEN = list('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')
+#FEN = list('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R')
 piecearray = np.zeros((8,8),dtype=np.int16)
 
 attack_array = np.zeros((2,8,8),dtype=np.int8)

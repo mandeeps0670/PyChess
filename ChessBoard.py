@@ -115,7 +115,7 @@ def main():
                 for selects in selectionbrd:
                     if selects.rect.collidepoint(event.pos):
                         print(piece_selected.type)
-                        piece_selected.update(selects.location)
+                        piece_selected.update(selects.location,selects.castletype)
                         settings.moves += 1
                         t = ChessPiece.isCheckStaleMate()
                         if t:
