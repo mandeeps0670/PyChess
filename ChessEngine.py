@@ -29,38 +29,30 @@ def Evaluation(player):
                 else:
                     c = 7-j
                     f=-1
-
+                82, 337, 365, 477, 1025, 0
                 if abs(piecearray[i,j]) == 100:
-                    val_sum += piecearray[i, j] + f*PawnTable[i,c]
+                    #val_sum += piecearray[i, j] + 2*f*PawnTable[i,c]
+                    val_sum += f*(82+ PawnTable[i,c])
                 elif abs(piecearray[i,j]) == 300:
-                    val_sum += piecearray[i, j] + f*BishopTable[i, c]
+                    # val_sum += piecearray[i, j] + f*BishopTable[i, c]
+                    val_sum += f * (337 + BishopTable[i, c])
                 elif abs(piecearray[i,j]) == 302:
-                    val_sum += piecearray[i, j] + f*KnightTable[i, c]
+                    #val_sum += piecearray[i, j] + f*KnightTable[i, c]
+                    val_sum += f * (365 + KnightTable[i, c])
                 elif abs(piecearray[i,j] )== 500 or abs(piecearray[i,c]) == 501:
-                    val_sum += piecearray[i, j] + f*RookTable[i, c]
+                    #val_sum += piecearray[i, j] + f*RookTable[i, c]
+                    val_sum += f * (477 + RookTable[i, c])
                 elif abs(piecearray[i,j] )== 900:
-                    val_sum += piecearray[i, j] + f*QueenTable[i, c]
+                    #val_sum += piecearray[i, j] + f*QueenTable[i, c]
+                    val_sum += f * (1025 + RookTable[i, c])
                 elif abs(piecearray[i,j] )== 1000 or abs(piecearray[i,j] )== 1001:
-                    val_sum += piecearray[i, j] + f*KingTable[i, c]
+                    #val_sum += piecearray[i, j] + f*KingTable[i, c]
+                    val_sum += f * (1225 + KingTable[i, c])
+
             attack_sum += temp_attack_array[i, j]
 
-    return (-1 ** player) * (3 * attack_sum + 2*val_sum)
+    return 0.5*attack_sum + (-1 ** player) * val_sum
 
-
-# def MakeMove(player):
-#
-#     for piece in piece_group[player]:
-#         pass
-#
-#     pass
-
-
-def DoMove():
-    pass
-
-
-def UndoMove():
-    pass
 
 
 def CastleMove(move):
@@ -168,40 +160,40 @@ def CanCastle(value):
         return False
 
 
-def getallmoves(value, locn, arr):
+def getallmoves(value, locn, narr,parr):
     if value == 100:
         move = np.array([0, 1])
         if inbrd(locn + move) and piecearray[tuple(locn + move)] == 0:
             if makepseudomove(locn, locn + move):
-                arr.append(comp(locn, locn + move))
+                narr.append(comp(locn, locn + move))
         if locn[1] == 1 and piecearray[tuple(locn + 2 * move)] == 0 and piecearray[tuple(locn + move)] == 0:
             if makepseudomove(locn, locn + 2 * move):
-                arr.append(comp(locn, locn + 2 * move))
+                parr.append(comp(locn, locn + 2 * move))
         move = np.array([1, 1])
         if inbrd(locn + move) and piecearray[tuple(locn + move)] < 0:
             if makepseudomove(locn, locn + move):
-                arr.append(comp(locn, locn + move))
+                parr.append(comp(locn, locn + move))
         move = np.array([-1, 1])
         if inbrd(locn + move) and piecearray[tuple(locn + move)] < 0:
             if makepseudomove(locn, locn + move):
-                arr.append(comp(locn, locn + move))
+                parr.append(comp(locn, locn + move))
     elif value == -100:
         move = np.array([0, -1])
         if inbrd(locn + move) and piecearray[tuple(locn + move)] == 0:
             if makepseudomove(locn, locn + move):
-                arr.append(comp(locn, locn + move))
+                narr.append(comp(locn, locn + move))
 
         if locn[1] == 6 and piecearray[tuple(locn + 2 * move)] == 0 and piecearray[tuple(locn + move)] == 0:
             if makepseudomove(locn, locn + 2 * move):
-                arr.append(comp(locn, locn + 2 * move))
+                parr.append(comp(locn, locn + 2 * move))
         move = np.array([1, -1])
         if inbrd(locn + move) and piecearray[tuple(locn + move)] > 0:
             if makepseudomove(locn, locn + move):
-                arr.append(comp(locn, locn + move))
+                parr.append(comp(locn, locn + move))
         move = np.array([-1, -1])
         if inbrd(locn + move) and piecearray[tuple(locn + move)] > 0:
             if makepseudomove(locn, locn + move):
-                arr.append(comp(locn, locn + move))
+                parr.append(comp(locn, locn + move))
 
 
 
@@ -212,7 +204,10 @@ def getallmoves(value, locn, arr):
         for move in moves:
             if inbrd(locn + move) and piecearray[tuple(locn + move)] * np.sign(value) <= 0:
                 if makepseudomove(locn, locn + move):
-                    arr.append(comp(locn, locn + move))
+                    if piecearray[tuple(locn + move)] * np.sign(value) < 0:
+                        parr.append(comp(locn, locn + move))
+                    else:
+                        narr.append(comp(locn, locn + move))
 
     elif value == 300 or value == -300:
         moves = np.array([
@@ -222,10 +217,10 @@ def getallmoves(value, locn, arr):
 
                 if inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] == 0:
                     if makepseudomove(locn, locn + k * move):
-                        arr.append(comp(locn, locn + k * move))
+                        narr.append(comp(locn, locn + k * move))
                 elif inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] * np.sign(value) < 0:
                     if makepseudomove(locn, locn + k * move):
-                        arr.append(comp(locn, locn + k * move))
+                        parr.append(comp(locn, locn + k * move))
                     break
                 else:
                     break
@@ -238,10 +233,10 @@ def getallmoves(value, locn, arr):
             for k in range(1, 8):
                 if inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] == 0:
                     if makepseudomove(locn, locn + k * move):
-                        arr.append(comp(locn, locn + k * move))
+                        narr.append(comp(locn, locn + k * move))
                 elif inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] * np.sign(value) < 0:
                     if makepseudomove(locn, locn + k * move):
-                        arr.append(comp(locn, locn + k * move))
+                        parr.append(comp(locn, locn + k * move))
                     break
                 else:
                     break
@@ -255,10 +250,10 @@ def getallmoves(value, locn, arr):
             for k in range(1, 8):
                 if inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] == 0:
                     if makepseudomove(locn, locn + k * move):
-                        arr.append(comp(locn, locn + k * move))
+                        narr.append(comp(locn, locn + k * move))
                 elif inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] * np.sign(value) < 0:
                     if makepseudomove(locn, locn + k * move):
-                        arr.append(comp(locn, locn + k * move))
+                        parr.append(comp(locn, locn + k * move))
                     break
                 else:
                     break
@@ -272,11 +267,11 @@ def getallmoves(value, locn, arr):
         for move in moves:
             if inbrd(locn + move) and piecearray[tuple(locn + move)] * np.sign(value) <= 0:
                 if makepseudomove(locn, locn + move):
-                    arr.append(comp(locn, locn + move))
+                    narr.append(comp(locn, locn + move))
 
     Castlable = CanCastle(value)
     if Castlable:
-        arr.append(Castlable)
+        parr.append(Castlable)
 
 
 
@@ -290,13 +285,18 @@ def Search(depth, alpha, beta, player,prevBest = None):
       return Evaluation(player)
 
 
+    AI_normal_moves_array = []
     AI_moves_array = []
     if prevBest != None:
         AI_moves_array.append(prevBest)
     for i in range(8):
         for j in range(8):
             if piecearray[i, j] * (-1 ** player) > 0:
-                getallmoves(piecearray[i, j], np.array([i, j]),AI_moves_array)
+                getallmoves(piecearray[i, j], np.array([i, j]),AI_normal_moves_array,AI_moves_array)
+
+
+    AI_moves_array = AI_moves_array + AI_normal_moves_array
+
 
     if len(AI_moves_array) == 0:
         return 'c'
@@ -381,12 +381,17 @@ def MoveGetterAI():
     print(settings.calc)
 
     seconds = time.time()
-    i = 0
-    bstmv = Search(2, -INfinity, INfinity, 1)
-    # while time.time() - seconds < 2:
-    #     i+=1
-    #     newbstmv = Search(i, -INfinity, INfinity, 1,bstmv)
-    #     bstmv = newbstmv
+    if settings.moves < 8:
+        return Search(2, -INfinity, INfinity, 1)
+    else:
+        i = 1
+        bstmv = Search(i, -INfinity, INfinity, 1)
+        while time.time() - seconds < 1:
+            i+=1
+            newbstmv = Search(i, -INfinity, INfinity, 1,bstmv)
+            bstmv = newbstmv
+            if type(bstmv) == str:
+                break
 
-    return bstmv
+        return bstmv
 

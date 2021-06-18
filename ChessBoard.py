@@ -182,14 +182,17 @@ def main():
                     if AI_out == 'c':
                         GAMEOVER = True
                         LOSS ="You Won"
+                    elif type(AI_out) == str:
+                        ChessEngine.CastleMove(AI_out)
+
                     else:
                         locn_old = ((AI_out%100)//8, (AI_out%100)%8)
                         locn_new = ((AI_out // 100)//8, (AI_out // 100)%8)
                         val_old = piecearray[locn_old]
                         piecearray[locn_old] = 0
                         piecearray[locn_new] = val_old
-                        ChessPiece.respriteboard()
-                        settings.moves+=1
+                    ChessPiece.respriteboard()
+                    settings.moves+=1
 
         drawboard()
         selectionbrd.draw(screen)
