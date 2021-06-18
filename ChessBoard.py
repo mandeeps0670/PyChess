@@ -53,15 +53,8 @@ piece_selected = None
 
 
 font = pygame.font.Font('freesansbold.ttf', 32)
-text = font.render('CHECK MATE', True, (255,0,0),(255,255,0))
 
 
-
-
-textRect = text.get_rect()
-
-
-textRect.center = (WIDTH // 2, HEIGHT // 2)
 
 
 def DrawNoOfMoves():
@@ -70,6 +63,14 @@ def DrawNoOfMoves():
     move_text_rect.center = (LEFTGAP / 2, HEIGHT / 2)
     screen.blit(move_text, move_text_rect)
 
+def gameover_message(loss):
+    s = pygame.Surface((BOARDL, BOARDL), pygame.SRCALPHA)  # per-pixel alpha
+    s.fill((128, 128, 128, 128))  # notice the alpha value in the color
+    screen.blit(s, (LEFTGAP,BORDER))
+    Loss_Text = font.render("Game Over: " + str(loss), True, (0, 0, 0))
+    move_text_rect = Loss_Text.get_rect()
+    move_text_rect.center = (WIDTH / 2, HEIGHT / 2)
+    screen.blit(Loss_Text, move_text_rect)
 
 def DrawTimer(t_old):
     if settings.moves == 0:
@@ -129,10 +130,12 @@ def draw_possible_moves():
 
 pygame.display.set_caption("Lets Play Chess")
 
-moves
+
+
 def main():
     setting_init()
     CHECKMATE = False
+    GAMEOVER = False
     settings.moves
     #moves = 0
     t_old =  pygame.time.get_ticks()
@@ -157,9 +160,11 @@ def main():
                             t = ChessPiece.isCheckStaleMate()
                             if t:
                                 if t == 10:
-                                    CHECKMATE = True
+                                    GAMEOVER = True
+                                    LOSS = "You Lost"
                                 else:
-                                    print("Stale Mate")
+                                    GAMEOVER = True
+                                    LOSS = "Stale Mate"
 
                             print(piecearray)
                     selectionbrd.empty()
@@ -174,13 +179,17 @@ def main():
                     print("Chess Engine Output : ")
                     AI_out = ChessEngine.MoveGetterAI()
                     print(AI_out)
-                    locn_old = ((AI_out%100)//8, (AI_out%100)%8)
-                    locn_new = ((AI_out // 100)//8, (AI_out // 100)%8)
-                    val_old = piecearray[locn_old]
-                    piecearray[locn_old] = 0
-                    piecearray[locn_new] = val_old
-                    ChessPiece.respriteboard()
-                    settings.moves+=1
+                    if AI_out == 'c':
+                        GAMEOVER = True
+                        LOSS ="You Won"
+                    else:
+                        locn_old = ((AI_out%100)//8, (AI_out%100)%8)
+                        locn_new = ((AI_out // 100)//8, (AI_out // 100)%8)
+                        val_old = piecearray[locn_old]
+                        piecearray[locn_old] = 0
+                        piecearray[locn_new] = val_old
+                        ChessPiece.respriteboard()
+                        settings.moves+=1
 
         drawboard()
         selectionbrd.draw(screen)
@@ -189,10 +198,10 @@ def main():
         black_pieces.draw(screen)
 
         DrawNoOfMoves()
-        t_new = DrawTimer(t_old)
-        t_old = t_new
-        if CHECKMATE:
-            screen.blit(text, textRect)
+        # t_new = DrawTimer(t_old)
+        # t_old = t_new
+        if GAMEOVER == True:
+            gameover_message(LOSS)
 
 
         pygame.display.update()

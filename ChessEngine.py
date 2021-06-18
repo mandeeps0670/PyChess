@@ -1,17 +1,20 @@
 import numpy as np
-
+import random
+import time
+import settings
 from ChessPiece import inbrd, makepseudomove, attackCalc
 from settings import *
 
 inCheck = False
 
+calc = 0
 moves = []
 
 INfinity = 10000
 
 BestMove = None
 
-Depth_Searched = 3
+Depth_Searched = 2
 
 
 def Evaluation(player):
@@ -22,24 +25,26 @@ def Evaluation(player):
             if piecearray[i,j] != 0:
                 if piecearray[i,j] > 0:
                     c = j
+                    f=1
                 else:
                     c = 7-j
+                    f=-1
 
                 if abs(piecearray[i,j]) == 100:
-                    val_sum += piecearray[i, j] + PawnTable[i,c]
+                    val_sum += piecearray[i, j] + f*PawnTable[i,c]
                 elif abs(piecearray[i,j]) == 300:
-                    val_sum += piecearray[i, j] + BishopTable[i, c]
+                    val_sum += piecearray[i, j] + f*BishopTable[i, c]
                 elif abs(piecearray[i,j]) == 302:
-                    val_sum += piecearray[i, j] + KnightTable[i, c]
+                    val_sum += piecearray[i, j] + f*KnightTable[i, c]
                 elif abs(piecearray[i,j] )== 500 or abs(piecearray[i,c]) == 501:
-                    val_sum += piecearray[i, j] + RookTable[i, c]
+                    val_sum += piecearray[i, j] + f*RookTable[i, c]
                 elif abs(piecearray[i,j] )== 900:
-                    val_sum += piecearray[i, j] + QueenTable[i, c]
+                    val_sum += piecearray[i, j] + f*QueenTable[i, c]
                 elif abs(piecearray[i,j] )== 1000 or abs(piecearray[i,j] )== 1001:
-                    val_sum += piecearray[i, j] + KingTable[i, c]
+                    val_sum += piecearray[i, j] + f*KingTable[i, c]
             attack_sum += temp_attack_array[i, j]
 
-    return (-1 ** player) * (10 * attack_sum + val_sum)
+    return (-1 ** player) * (3 * attack_sum + 2*val_sum)
 
 
 # def MakeMove(player):
@@ -59,22 +64,22 @@ def UndoMove():
 
 
 def CastleMove(move):
-    if move[1] == 'Q':
+    if move[0] == 'Q':
         piecearray[0, 0] = 0
         piecearray[4, 0] = 0
         piecearray[2, 0] = 1000
         piecearray[3, 0] = 500
-    elif move[1] == 'q':
+    elif move[0] == 'q':
         piecearray[0, 7] = 0
         piecearray[4, 7] = 0
         piecearray[2, 7] = -1000
         piecearray[3, 7] = -500
-    elif move[1] == 'K':
+    elif move[0] == 'K':
         piecearray[7, 0] = 0
         piecearray[4, 0] = 0
         piecearray[6, 0] = 1000
         piecearray[5, 0] = 500
-    elif move[1] == 'k':
+    elif move[0] == 'k':
         piecearray[7, 7] = 0
         piecearray[4, 7] = 0
         piecearray[6, 7] = -1000
@@ -82,22 +87,22 @@ def CastleMove(move):
 
 
 def UndoCastleMove(move):
-    if move[1] == 'Q':
+    if move[0] == 'Q':
         piecearray[0, 0] = 501
         piecearray[4, 0] = 1001
         piecearray[2, 0] = 0
         piecearray[3, 0] = 0
-    elif move[1] == 'q':
+    elif move[0] == 'q':
         piecearray[0, 7] = -501
         piecearray[4, 7] = -1001
         piecearray[2, 7] = 0
         piecearray[3, 7] = 0
-    elif move[1] == 'K':
+    elif move[0] == 'K':
         piecearray[7, 0] = 501
         piecearray[4, 0] = 1001
         piecearray[6, 0] = 0
         piecearray[5, 0] = 0
-    elif move[1] == 'k':
+    elif move[0] == 'k':
         piecearray[7, 7] = -501
         piecearray[4, 7] = -1001
         piecearray[6, 7] = 0
@@ -134,10 +139,8 @@ def CanCastle(value):
             attackCalc(temp_attack_array, piece.location)
         # print(temp_attack_array)
         if piecearray[4, 0] == 1001:
-            # if self.location == np.array([0,0]) or self.location == np.array([0,0]):
-            ##print("K")
             if piecearray[0, 0] == 501:
-                if piecearray[2, 0] == 0 and piecearray[3, 0] == 0:
+                if piecearray[1, 0] == 0 and piecearray[2, 0] == 0 and piecearray[3, 0] == 0:
                     if temp_attack_array[2, 0] == 0 and temp_attack_array[3, 0] == 0 and temp_attack_array[4, 0] == 0:
                         return 'Q'
             # if self.location == np.array([7, 0]):
@@ -152,7 +155,7 @@ def CanCastle(value):
 
         if piecearray[4, 7] == -1001:
             if piecearray[0, 7] == -501:
-                if piecearray[2, 7] == 0 and piecearray[3, 7] == 0:
+                if piecearray[1, 7] == 0 and piecearray[2, 7] == 0 and piecearray[3, 7] == 0:
                     if temp_attack_array[2, 7] == 0 and temp_attack_array[3, 7] == 0 and temp_attack_array[4, 7] == 0:
                         return 'q'
 
@@ -276,125 +279,30 @@ def getallmoves(value, locn, arr):
         arr.append(Castlable)
 
 
-# def Search(depth, alpha, beta, player):
-#
-#
-#
-#     if depth == 0:
-#         return Evaluation(player)
-#
-#     print("hELLO")
-#
-#     AI_moves_array = []
-#     for i in range(8):
-#         for j in range(8):
-#             if piecearray[i, j] * (-1 ** player) > 0:
-#                 getallmoves(piecearray[i, j], np.array([i, j]), AI_moves_array)
-#
-#     for move_val in AI_moves_array:
-#         if type(move_val) == str:
-#             CastleMove(move_val)
-#
-#             player += 1
-#             gain = -Search(depth - 1, -beta, -alpha, player)
-#             player -= 1
-#             UndoCastleMove(move_val)
-#         else:
-#             locn_new = ((move_val//100)//8 , (move_val//100)%8)
-#             locn_old = ((move_val % 100) // 8, (move_val % 100) % 8)
-#             pieceval = piecearray[locn_old]
-#             attackval = piecearray[locn_new]
-#             piecearray[locn_old] = 0
-#             piecearray[locn_new] = pieceval
-#
-#
-#             player += 1
-#             # Compute
-#             gain = -Search(depth - 1, -beta, -alpha, player)
-#             player -= 1
-#             # UndoMove
-#             piecearray[tuple(locn_old)] = pieceval
-#             piecearray[tuple(locn_new)] = attackval
-#             if gain >= alpha:
-#                 alpha = gain
-#
-#         if depth == Depth_Searched:
-#             BestMove == move_val
-#
-#             if alpha >= beta:
-#                 return  alpha
-#         return alpha
-
-
-    #     if depth == Depth_Searched:
-    #         return move_val
-    #
-    #     if gain >= beta:
-    #
-    #         return beta
-    # alpha = max(alpha, gain)
-    #     #print(alpha)
-    # return alpha
-    # for piece in piece_group[player % 2]:
-    #     moves.clear()
-    #     piece.get_moves(moves)
-    #     locn_old = piece.location
-    #     for locn_new in moves:
-    #         if type(locn_new) == str:
-    #             CastleMove(locn_new)
-    #
-    #             player += 1
-    #             gain = -Search(depth - 1, -beta, -alpha, player)
-    #             player -= 1
-    #             UndoCastleMove(locn_new)
-    #
-    #         else:
-    #             # MakeMove
-    #             pieceval = piecearray[tuple(locn_old)]
-    #             attackval = piecearray[tuple(locn_new)]
-    #             piecearray[tuple(locn_old)] = 0
-    #             piecearray[tuple(locn_new)] = pieceval
-    #             piece.location = locn_new
-    #
-    #             player += 1
-    #             # Compute
-    #             gain = -Search(depth - 1, -beta, -alpha, player)
-    #             player -= 1
-    #             # UndoMove
-    #             piecearray[tuple(locn_old)] = pieceval
-    #             piecearray[tuple(locn_new)] = attackval
-    #             piece.location = locn_old
-
-
-    # for move in moves:
-    #     DoMove()
-    #     gain = -Search(depth-1, -beta , -alpha)
-    #     UndoMove()
-    #     if gain >= beta:
-    #         return beta
-    #     alpha = max(alpha,gain)
 
 
 
+def Search(depth, alpha, beta, player,prevBest = None):
 
-
-def Search(depth,alpha,beta,player):
-
+    settings.calc += 1
 
     if depth == 0:
       return Evaluation(player)
 
+
     AI_moves_array = []
+    if prevBest != None:
+        AI_moves_array.append(prevBest)
     for i in range(8):
         for j in range(8):
             if piecearray[i, j] * (-1 ** player) > 0:
                 getallmoves(piecearray[i, j], np.array([i, j]),AI_moves_array)
 
-    if len(AI_moves_array)==0:
-        return -INfinity
+    if len(AI_moves_array) == 0:
+        return 'c'
 
+    random.shuffle(AI_moves_array)
     if player%2 == 1:
-        print("CalcMax")
         maxEval = -INfinity
         for move_val in AI_moves_array:
             if type(move_val) == str:
@@ -423,12 +331,12 @@ def Search(depth,alpha,beta,player):
             # maxEval = max(maxEval,gain)
             if gain >= maxEval:
                 maxEval = gain
-                if depth == Depth_Searched:
+                if player == 1:
                     BestMove = move_val
             alpha = max(alpha,gain)
             if beta <= alpha:
                 break
-        if depth == Depth_Searched:
+        if player == 1:
             return BestMove
 
         return maxEval
@@ -468,6 +376,17 @@ def Search(depth,alpha,beta,player):
 
 
 def MoveGetterAI():
+
     print("HEllo")
-    return Search(Depth_Searched, -INfinity, INfinity, 1)
+    print(settings.calc)
+
+    seconds = time.time()
+    i = 0
+    bstmv = Search(2, -INfinity, INfinity, 1)
+    # while time.time() - seconds < 2:
+    #     i+=1
+    #     newbstmv = Search(i, -INfinity, INfinity, 1,bstmv)
+    #     bstmv = newbstmv
+
+    return bstmv
 

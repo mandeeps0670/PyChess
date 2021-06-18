@@ -5,7 +5,6 @@ import settings
 from settings import *
 
 
-
 # setting_init()
 def pieceval(piece):
     if piece.isupper():
@@ -35,6 +34,7 @@ def pieceval(piece):
         elif piece == 'k':
             return -1000
 
+
 def piecetyp(piece):
     if piece > 0:
         if piece == 100:
@@ -47,7 +47,7 @@ def piecetyp(piece):
             return 'R'
         elif piece == 900:
             return 'Q'
-        elif piece == 1000 or piece == 1001 :
+        elif piece == 1000 or piece == 1001:
             return 'K'
     else:
         if piece == -100:
@@ -63,6 +63,7 @@ def piecetyp(piece):
         elif piece == -1000 or piece == -1001:
             return 'k'
 
+
 def globalloc(location):
     loc = (
         int(LEFTGAP + BOARDSQ / 2 + ((location[0]) * BOARDSQ)),
@@ -76,14 +77,15 @@ def inbrd(location):
     else:
         return False
 
+
 def respriteboard():
     piece_group[0].empty()
     piece_group[1].empty()
     for i in range(8):
         for j in range(8):
-            if piecearray[i,j]:
-                location = np.array([i,j])
-                piece = piecetyp(piecearray[i,j])
+            if piecearray[i, j]:
+                location = np.array([i, j])
+                piece = piecetyp(piecearray[i, j])
                 ##print(piece)
                 if piece.isupper():
                     piece_group[0].add(typepiece(piece, location))
@@ -91,67 +93,7 @@ def respriteboard():
                     piece_group[1].add(typepiece(piece, location))
 
 
-def makepseudomove(locn_old,locn_new):
-
-    # if type(locn_old) == str:
-    #     if locn_new == 'Q':
-    #         piecearray[0,0] = 0
-    #         piecearray[0,4] = 0
-    #         piecearray[0,2] = 1000
-    #         piecearray[0,3] = 500
-    #     elif locn_new == 'q':
-    #         piecearray[7, 0] = 0
-    #         piecearray[7, 4] = 0
-    #         piecearray[7,2] = -1000
-    #         piecearray[7,3] = -500
-    #     elif locn_new == 'K':
-    #         piecearray[0, 7] = 0
-    #         piecearray[0, 4] = 0
-    #         piecearray[0,6] = 1000
-    #         piecearray[0,5] = 500
-    #     elif locn_new == 'Q':
-    #         piecearray[7, 7] = 0
-    #         piecearray[7, 4] = 0
-    #         piecearray[7, 6] = -1000
-    #         piecearray[7, 5] = -500
-    #     if locn_old.isupper():
-    #         pieceval = 1
-    #     else:
-    #         pieceval = -1
-    #     for i in range(8):
-    #         for j in range(8):
-    #             if piecearray[i,j]*np.sign(pieceval) < 0:
-    #                 attackCalc(temp_attack_array, np.array([i,j]))
-    #             elif piecearray[i,j]* np.sign(pieceval) > 0 and (abs(piecearray[i,j]) == 1000 or abs(piecearray[i,j]) == 1001) :
-    #                 king_locn = (i,j)
-    #     if locn_new == 'Q':
-    #         piecearray[0,0] = 501
-    #         piecearray[0,4] = 1001
-    #         piecearray[0,2] = 0
-    #         piecearray[0,3] = 0
-    #     elif locn_new == 'q':
-    #         piecearray[7, 0] = 0
-    #         piecearray[7, 4] = 0
-    #         piecearray[7,2] = -1000
-    #         piecearray[7,3] = -500
-    #     elif locn_new == 'K':
-    #         piecearray[0, 7] = -501
-    #         piecearray[0, 4] = -1001
-    #         piecearray[0,6] = 0
-    #         piecearray[0,5] = 0
-    #     elif locn_new == 'Q':
-    #         piecearray[7, 7] = -501
-    #         piecearray[7, 4] = -1001
-    #         piecearray[7, 6] = 0
-    #         piecearray[7, 5] = 0
-
-    #else:
-
-    ##LocateKing
-
-    # for i in range(8):
-    #     for j in range(8):
-    #         pass
+def makepseudomove(locn_old, locn_new):
 
     temp_attack_array.fill(0)
     pieceval = piecearray[tuple(locn_old)]
@@ -160,26 +102,21 @@ def makepseudomove(locn_old,locn_new):
     piecearray[tuple(locn_new)] = pieceval
     for i in range(8):
         for j in range(8):
-            if piecearray[i,j]*np.sign(pieceval) < 0:
-                attackCalc(temp_attack_array, np.array([i,j]))
-            elif  np.sign(piecearray[i,j])* np.sign(pieceval) > 0 and (abs(piecearray[i,j]) == 1000 or abs(piecearray[i,j]) == 1001) :
-                king_locn = (i,j)
-    #print(piecearray)
-    #print(temp_attack_array)
-    piecearray[tuple(locn_old)]= pieceval
+            if piecearray[i, j] * np.sign(pieceval) < 0:
+                attackCalc(temp_attack_array, np.array([i, j]))
+            elif np.sign(piecearray[i, j]) * np.sign(pieceval) > 0 and (
+                    abs(piecearray[i, j]) == 1000 or abs(piecearray[i, j]) == 1001):
+                king_locn = (i, j)
+    # print(piecearray)
+    # print(temp_attack_array)
+    piecearray[tuple(locn_old)] = pieceval
     piecearray[tuple(locn_new)] = attackval
-    #print(piecearray)
-
+    # print(piecearray)
 
     if temp_attack_array[king_locn] != 0:
         return False
     else:
         return True
-
-
-
-
-
 
 
 class typepiece(pygame.sprite.Sprite):
@@ -190,7 +127,11 @@ class typepiece(pygame.sprite.Sprite):
 
         self.location = location
         self.type = type
-        self.img = pygame.image.load(os.path.join('Images', type + '.png'))
+        if self.type.isupper():
+            self.img = pygame.image.load(os.path.join('Images', type + 'W.png'))
+        else:
+            self.img = pygame.image.load(os.path.join('Images', type + 'B.png'))
+
         self.image = pygame.transform.scale(self.img, (int(BOARDSQ), int(BOARDSQ)))
         self.image.convert()
         self.rect = self.image.get_rect()
@@ -246,45 +187,43 @@ class typepiece(pygame.sprite.Sprite):
     def Castling(self):
         if self.type == 'K' or self.type == 'R':
             temp_attack_array.fill(0)
-            for piece in piece_group[(moves+1) % 2]:
-                attackCalc(temp_attack_array,piece.location)
-            #print(temp_attack_array)
-            if piecearray[4,0] == 1001:
-                # if self.location == np.array([0,0]) or self.location == np.array([0,0]):
-                ##print("K")
-                if piecearray[0,0] == 501:
-                    if piecearray[2, 0] == 0 and piecearray[3, 0] == 0:
-                        if temp_attack_array[2,0] == 0 and temp_attack_array[3,0] == 0 and temp_attack_array[4,0] == 0 :
+            for piece in piece_group[(moves + 1) % 2]:
+                attackCalc(temp_attack_array, piece.location)
+            # print(temp_attack_array)
+            if piecearray[4, 0] == 1001:
+                if piecearray[0, 0] == 501:
+                    if piecearray[1, 0] == 0 and piecearray[2, 0] == 0 and piecearray[3, 0] == 0:
+                        if temp_attack_array[2, 0] == 0 and temp_attack_array[3, 0] == 0 and temp_attack_array[
+                            4, 0] == 0:
                             return 'Q'
                 # if self.location == np.array([7, 0]):
-                if piecearray[7,0] == 501:
+                if piecearray[7, 0] == 501:
                     if piecearray[5, 0] == 0 and piecearray[6, 0] == 0:
-                        if temp_attack_array[6,0] == 0 and  temp_attack_array[5,0] == 0 and temp_attack_array[4,0] == 0 :
+                        if temp_attack_array[6, 0] == 0 and temp_attack_array[5, 0] == 0 and temp_attack_array[
+                            4, 0] == 0:
                             return 'K'
         elif self.type == 'k' or self.type == 'r':
             temp_attack_array.fill(0)
-            for piece in piece_group[(moves+1) % 2]:
-                attackCalc(temp_attack_array,piece.location)
+            for piece in piece_group[(moves + 1) % 2]:
+                attackCalc(temp_attack_array, piece.location)
 
-
-            if piecearray[4,7] == -1001:
-                if piecearray[0,7] == -501:
-                    if piecearray[2, 7] == 0 and piecearray[3, 7] == 0:
-                        if temp_attack_array[2,7] == 0 and  temp_attack_array[3,7] == 0 and temp_attack_array[4,7] == 0 :
-
+            if piecearray[4, 7] == -1001:
+                if piecearray[0, 7] == -501:
+                    if piecearray[1, 7] == 0 and piecearray[2, 7] == 0 and piecearray[3, 7] == 0:
+                        if temp_attack_array[2, 7] == 0 and temp_attack_array[3, 7] == 0 and temp_attack_array[
+                            4, 7] == 0:
                             return 'q'
 
-                if piecearray[7,7] == -501:
+                if piecearray[7, 7] == -501:
                     if piecearray[5, 7] == 0 and piecearray[6, 7] == 0:
-                        if temp_attack_array[6,7] == 0 and  temp_attack_array[5,7] == 0 and temp_attack_array[4,7] == 0 :
+                        if temp_attack_array[6, 7] == 0 and temp_attack_array[5, 7] == 0 and temp_attack_array[
+                            4, 7] == 0:
                             return 'k'
 
         else:
             return False
 
-
-
-    def get_moves(self,arr):
+    def get_moves(self, arr):
 
         if self.type == 'P':
 
@@ -292,15 +231,14 @@ class typepiece(pygame.sprite.Sprite):
             ## move pawn 1 forward
 
             if inbrd(self.location + move) and piecearray[tuple(self.location + move)] == 0:
-                if makepseudomove(self.location,self.location+move):
+                if makepseudomove(self.location, self.location + move):
                     arr.append(self.location + move)
 
             ## move 2 forward
-            if self.location[1] == 1  and piecearray[tuple(self.location + 2 * move)] == 0 and piecearray[
+            if self.location[1] == 1 and piecearray[tuple(self.location + 2 * move)] == 0 and piecearray[
                 tuple(self.location + move)] == 0:
-                if makepseudomove(self.location, self.location +2 * move):
+                if makepseudomove(self.location, self.location + 2 * move):
                     arr.append(self.location + 2 * move)
-
 
             ## move sideways
             if inbrd(self.location + self.movespl[0]) and piecearray[tuple(self.location + self.movespl[0])] < 0:
@@ -350,7 +288,7 @@ class typepiece(pygame.sprite.Sprite):
                 while inbrd(self.location + k * move) and piecearray[tuple(self.location + k * move)] == 0:
                     #####print("Hi")
 
-                    if makepseudomove(self.location, self.location +  k * move):
+                    if makepseudomove(self.location, self.location + k * move):
                         arr.append(self.location + k * move)
                     k += 1
                 if inbrd(self.location + k * move) and (piecearray[tuple(self.location + k * move)] * pieceval(
@@ -366,12 +304,12 @@ class typepiece(pygame.sprite.Sprite):
                 # print(piecearray[tuple(self.location + k*move)])
                 ####print(piecearray)
                 if inbrd(self.location + move) and piecearray[tuple(self.location + move)] == 0:
-                    if makepseudomove(self.location, self.location +  move):
+                    if makepseudomove(self.location, self.location + move):
                         arr.append(self.location + move)
-                elif inbrd(self.location + move) and (piecearray[tuple(self.location + move)] * pieceval(self.type)) < 0:
-                    if makepseudomove(self.location, self.location +  move):
+                elif inbrd(self.location + move) and (
+                        piecearray[tuple(self.location + move)] * pieceval(self.type)) < 0:
+                    if makepseudomove(self.location, self.location + move):
                         arr.append(self.location + move)
-
 
         castle = self.Castling()
 
@@ -403,26 +341,25 @@ class typepiece(pygame.sprite.Sprite):
             #     elif self.type == 'k':
             #         arr.append('kk')
 
-
-    def update(self, location,castletype):
+    def update(self, location, castletype):
 
         if type(castletype) == str:
             locn_new = castletype[1]
             if locn_new == 'Q':
-                piecearray[0,0] = 0
-                piecearray[4,0] = 0
-                piecearray[2,0] = 1000
-                piecearray[3,0] = 500
+                piecearray[0, 0] = 0
+                piecearray[4, 0] = 0
+                piecearray[2, 0] = 1000
+                piecearray[3, 0] = 500
             elif locn_new == 'q':
                 piecearray[0, 7] = 0
                 piecearray[4, 7] = 0
-                piecearray[2,7] = -1000
-                piecearray[3,7] = -500
+                piecearray[2, 7] = -1000
+                piecearray[3, 7] = -500
             elif locn_new == 'K':
                 piecearray[7, 0] = 0
                 piecearray[4, 0] = 0
-                piecearray[6,0] = 1000
-                piecearray[5,0] = 500
+                piecearray[6, 0] = 1000
+                piecearray[5, 0] = 500
             elif locn_new == 'k':
                 piecearray[7, 7] = 0
                 piecearray[4, 7] = 0
@@ -432,18 +369,17 @@ class typepiece(pygame.sprite.Sprite):
         else:
             piecearray[tuple(self.location)] = 0
             self.location = location
-            if pieceval(self.type)*piecearray[tuple(location)] < 0 :
+            if pieceval(self.type) * piecearray[tuple(location)] < 0:
                 piecearray[tuple(self.location)] = pieceval(self.type)
                 respriteboard()
             else:
                 piecearray[tuple(self.location)] = pieceval(self.type)
             if self.type == 'P' and self.location[1] == 7:
-                piecearray[tuple(self.location)] = 9*pieceval(self.type)
+                piecearray[tuple(self.location)] = 9 * pieceval(self.type)
                 respriteboard()
             elif self.type == 'p' and self.location[1] == 0:
-                piecearray[tuple(self.location)] = 9*pieceval(self.type)
+                piecearray[tuple(self.location)] = 9 * pieceval(self.type)
                 respriteboard()
-
 
         self.rect.center = globalloc(self.location)
 
@@ -456,17 +392,17 @@ class possible_move(pygame.sprite.Sprite):
             self.castletype = location
 
             if location == 'RQ' or location == 'RK':
-                self.location = np.array([4,0])
+                self.location = np.array([4, 0])
             elif location == 'KQ':
-                self.location = np.array([0,0])
+                self.location = np.array([0, 0])
             elif location == 'KK':
-                self.location = np.array([7,0])
+                self.location = np.array([7, 0])
             elif location == 'rq' or location == 'rk':
-                self.location = np.array([4,7])
+                self.location = np.array([4, 7])
             elif location == 'kq':
-                self.location = np.array([0,7])
+                self.location = np.array([0, 7])
             elif location == 'kk':
-                self.location = np.array([7,7])
+                self.location = np.array([7, 7])
         else:
             self.castletype = None
             self.location = location
@@ -481,21 +417,18 @@ class possible_move(pygame.sprite.Sprite):
         self.rect.center = globalloc(self.location)
 
 
-
-
-
-def attackCalc(arr,locn):
+def attackCalc(arr, locn):
     value = piecearray[tuple(locn)]
     if value == 100:
-        if inbrd(locn + np.array([1,1])) and piecearray[tuple(locn + np.array([1,1]))] <= 0:
-            arr[tuple(locn + np.array([1, 1]))] += 1
-        if inbrd(locn + np.array([-1,1])) and piecearray[tuple(locn + np.array([-1,1]))] <= 0:
-            arr[tuple(locn + np.array([-1, 1]))] += 1
+        if inbrd(locn + np.array([1, 1])) and piecearray[tuple(locn + np.array([1, 1]))] <= 0:
+            arr[tuple(locn + np.array([1, 1]))] += 2
+        if inbrd(locn + np.array([-1, 1])) and piecearray[tuple(locn + np.array([-1, 1]))] <= 0:
+            arr[tuple(locn + np.array([-1, 1]))] += 2
     elif value == -100:
-        if inbrd(locn + np.array([1,-1])) and piecearray[tuple(locn + np.array([1,-1]))] >= 0:
-            arr[tuple(locn + np.array([1, -1]))] += 1
-        if inbrd(locn + np.array([-1,-1])) and piecearray[tuple(locn + np.array([-1,-1]))] >= 0:
-            arr[tuple(locn + np.array([-1, -1]))] += 1
+        if inbrd(locn + np.array([1, -1])) and piecearray[tuple(locn + np.array([1, -1]))] >= 0:
+            arr[tuple(locn + np.array([1, -1]))] += 5
+        if inbrd(locn + np.array([-1, -1])) and piecearray[tuple(locn + np.array([-1, -1]))] >= 0:
+            arr[tuple(locn + np.array([-1, -1]))] += 5
 
 
     elif value == 302 or value == -302:
@@ -503,18 +436,18 @@ def attackCalc(arr,locn):
             [2, 1], [-2, 1], [-2, -1], [2, -1], [
                 1, 2], [-1, 2], [-1, -2], [1, -2]])
         for move in moves:
-            if inbrd(locn + move):# and piecearray[tuple(locn + move)]*value <= 0:
-                arr[tuple(locn + move)] += 1
+            if inbrd(locn + move):  # and piecearray[tuple(locn + move)]*value <= 0:
+                arr[tuple(locn + move)] += 3
 
     elif value == 300 or value == -300:
         moves = np.array([
             [1, 1], [-1, 1], [-1, -1], [1, -1]])
         for move in moves:
-            for k in range(1,8):
-                if inbrd(locn + k*move) and piecearray[tuple(locn + k*move)] == 0:
-                    arr[tuple(locn + k*move)] += 1
-                elif inbrd(locn + k*move):# and piecearray[tuple(locn + k*move)] * value < 0:
-                    arr[tuple(locn + k*move)] += 1
+            for k in range(1, 8):
+                if inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] == 0:
+                    arr[tuple(locn + k * move)] += 2
+                elif inbrd(locn + k * move):  # and piecearray[tuple(locn + k*move)] * value < 0:
+                    arr[tuple(locn + k * move)] += 5
                     break
                 # elif inbrd(locn + k*move) and piecearray[tuple(locn + k*move)] * value > 0:
                 #     break
@@ -522,11 +455,11 @@ def attackCalc(arr,locn):
         moves = np.array([
             [1, 0], [-1, 0], [0, -1], [0, 1]])
         for move in moves:
-            for k in range(1,8):
-                if inbrd(locn + k*move) and piecearray[tuple(locn + k*move)] == 0:
-                    arr[tuple(locn + k*move)] += 1
-                elif inbrd(locn + k*move):# and piecearray[tuple(locn + k*move)] * value < 0:
-                    arr[tuple(locn + k*move)] += 1
+            for k in range(1, 8):
+                if inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] == 0:
+                    arr[tuple(locn + k * move)] += 2
+                elif inbrd(locn + k * move):  # and piecearray[tuple(locn + k*move)] * value < 0:
+                    arr[tuple(locn + k * move)] += 5
                     break
                 # elif inbrd(locn + k*move) and piecearray[tuple(locn + k*move)] * value > 0:
                 #     break
@@ -535,11 +468,11 @@ def attackCalc(arr,locn):
             [1, 1], [-1, 1], [-1, -1], [1, -1], [0, -1], [
                 0, 1], [1, 0], [-1, 0]])
         for move in moves:
-            for k in range(1,8):
-                if inbrd(locn + k*move) and piecearray[tuple(locn + k*move)] == 0:
-                    arr[tuple(locn + k*move)] += 1
-                elif inbrd(locn + k*move):# and piecearray[tuple(locn +k* move)] * value < 0:
-                    arr[tuple(locn + k*move)] += 1
+            for k in range(1, 8):
+                if inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] == 0:
+                    arr[tuple(locn + k * move)] += 2
+                elif inbrd(locn + k * move):  # and piecearray[tuple(locn +k* move)] * value < 0:
+                    arr[tuple(locn + k * move)] += 5
                     break
                 # elif inbrd(locn + k*move) and piecearray[tuple(locn +k* move)] * value > 0:
                 #     break
@@ -549,33 +482,32 @@ def attackCalc(arr,locn):
             [1, 1], [-1, 1], [-1, -1], [1, -1], [0, -1], [
                 0, 1], [1, 0], [-1, 0]])
         for move in moves:
-            if inbrd(locn + move) : #and piecearray[tuple(locn + move)] * value <= 0
-                arr[tuple(locn + move)] += 1
+            if inbrd(locn + move):  # and piecearray[tuple(locn + move)] * value <= 0
+                arr[tuple(locn + move)] += 3
 
 
 def isCheckStaleMate():
     ###print(moves)
     checkmatearray = []
-    king_locn = np.array([0,0])
+    king_locn = np.array([0, 0])
     temp_attack_array.fill(0)
 
     if len(piece_group[0]) == 1 and len(piece_group[1]) == 1:
         return 2
 
-    for piece in piece_group[moves%2]:
+    for piece in piece_group[moves % 2]:
         piece.get_moves(checkmatearray)
-        if len(checkmatearray)>0:
+        if len(checkmatearray) > 0:
             return False
-        attackCalc(temp_attack_array,piece.location)
+        attackCalc(temp_attack_array, piece.location)
         ###print("wwwwwwwwwwwwwwwwwwwwwwww")
         ###print(temp_attack_array)
-        if moves%2 == 0 and piece.type == 'K':
+        if moves % 2 == 0 and piece.type == 'K':
             king_locn = piece.location
-        elif moves%2 == 1 and piece.type == 'k':
+        elif moves % 2 == 1 and piece.type == 'k':
             king_locn = piece.location
 
     if temp_attack_array[tuple(king_locn)] != 0:
         return 10
     else:
         return 2
-
