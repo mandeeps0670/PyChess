@@ -84,7 +84,7 @@ def respriteboard():
             if piecearray[i,j]:
                 location = np.array([i,j])
                 piece = piecetyp(piecearray[i,j])
-                print(piece)
+                ##print(piece)
                 if piece.isupper():
                     piece_group[0].add(typepiece(piece, location))
                 else:
@@ -146,6 +146,13 @@ def makepseudomove(locn_old,locn_new):
     #         piecearray[7, 5] = 0
 
     #else:
+
+    ##LocateKing
+
+    # for i in range(8):
+    #     for j in range(8):
+    #         pass
+
     temp_attack_array.fill(0)
     pieceval = piecearray[tuple(locn_old)]
     attackval = piecearray[tuple(locn_new)]
@@ -155,7 +162,7 @@ def makepseudomove(locn_old,locn_new):
         for j in range(8):
             if piecearray[i,j]*np.sign(pieceval) < 0:
                 attackCalc(temp_attack_array, np.array([i,j]))
-            elif piecearray[i,j]* np.sign(pieceval) > 0 and (abs(piecearray[i,j]) == 1000 or abs(piecearray[i,j]) == 1001) :
+            elif  np.sign(piecearray[i,j])* np.sign(pieceval) > 0 and (abs(piecearray[i,j]) == 1000 or abs(piecearray[i,j]) == 1001) :
                 king_locn = (i,j)
     print(piecearray)
     print(temp_attack_array)
@@ -241,10 +248,10 @@ class typepiece(pygame.sprite.Sprite):
             temp_attack_array.fill(0)
             for piece in piece_group[(moves+1) % 2]:
                 attackCalc(temp_attack_array,piece.location)
-            print(temp_attack_array)
+            #print(temp_attack_array)
             if piecearray[4,0] == 1001:
                 # if self.location == np.array([0,0]) or self.location == np.array([0,0]):
-                print("K")
+                ##print("K")
                 if piecearray[0,0] == 501:
                     if piecearray[2, 0] == 0 and piecearray[3, 0] == 0:
                         if temp_attack_array[2,0] == 0 and temp_attack_array[3,0] == 0 and temp_attack_array[4,0] == 0 :
@@ -258,10 +265,13 @@ class typepiece(pygame.sprite.Sprite):
             temp_attack_array.fill(0)
             for piece in piece_group[(moves+1) % 2]:
                 attackCalc(temp_attack_array,piece.location)
-            if piecearray[5,7] == -1001:
+
+
+            if piecearray[4,7] == -1001:
                 if piecearray[0,7] == -501:
                     if piecearray[2, 7] == 0 and piecearray[3, 7] == 0:
-                        if temp_attack_array[2,] == 0 and  temp_attack_array[3,7] == 0 and temp_attack_array[4,7] == 0 :
+                        if temp_attack_array[2,7] == 0 and  temp_attack_array[3,7] == 0 and temp_attack_array[4,7] == 0 :
+
                             return 'q'
 
                 if piecearray[7,7] == -501:
@@ -333,12 +343,13 @@ class typepiece(pygame.sprite.Sprite):
 
         elif self.isInf:
             for move in self.moves:
-                print(move)
+                ####print(move)
                 k = 1
-                print(self.location + k * move)
-                print(piecearray)
+                # print(self.location + k * move)
+                # print(piecearray)
                 while inbrd(self.location + k * move) and piecearray[tuple(self.location + k * move)] == 0:
-                    print("Hi")
+                    #####print("Hi")
+
                     if makepseudomove(self.location, self.location +  k * move):
                         arr.append(self.location + k * move)
                     k += 1
@@ -349,11 +360,11 @@ class typepiece(pygame.sprite.Sprite):
 
         else:
             for move in self.moves:
-                print(move)
+                #####print(move)
                 # print(inbrd(self.location + k*move))
-                print(self.location + move)
+                ####print(self.location + move)
                 # print(piecearray[tuple(self.location + k*move)])
-                print(piecearray)
+                ####print(piecearray)
                 if inbrd(self.location + move) and piecearray[tuple(self.location + move)] == 0:
                     if makepseudomove(self.location, self.location +  move):
                         arr.append(self.location + move)
@@ -363,12 +374,12 @@ class typepiece(pygame.sprite.Sprite):
 
 
         castle = self.Castling()
-        print(castle)
+
         if castle:
-            print("Castle")
+            ###print("Castle")
             if (castle.isupper() and self.type.isupper()) or (castle.islower() and self.type.islower()):
                 arr.append(self.type + castle)
-                print(self.type + castle)
+                ###print(self.type + castle)
 
             # if castle == 'Q':
             #     if self.type == 'R':
@@ -443,6 +454,7 @@ class possible_move(pygame.sprite.Sprite):
 
         if type(location) == str:
             self.castletype = location
+
             if location == 'RQ' or location == 'RK':
                 self.location = np.array([4,0])
             elif location == 'KQ':
@@ -542,6 +554,7 @@ def attackCalc(arr,locn):
 
 
 def isCheckStaleMate():
+    ###print(moves)
     checkmatearray = []
     king_locn = np.array([0,0])
     temp_attack_array.fill(0)
@@ -554,6 +567,8 @@ def isCheckStaleMate():
         if len(checkmatearray)>0:
             return False
         attackCalc(temp_attack_array,piece.location)
+        ###print("wwwwwwwwwwwwwwwwwwwwwwww")
+        ###print(temp_attack_array)
         if moves%2 == 0 and piece.type == 'K':
             king_locn = piece.location
         elif moves%2 == 1 and piece.type == 'k':

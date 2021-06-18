@@ -4,6 +4,7 @@ import os
 import numpy as np
 from pygame.constants import MOUSEBUTTONDOWN
 
+import ChessEngine
 import ChessPiece
 import settings
 from settings import *
@@ -39,6 +40,9 @@ def pieceval(piece):
         elif piece == 'k':
             return -1001
 
+Timer_time = np.array([6000,6000])
+
+
 FPS = 15
 drk_sq = (118, 150, 86)
 light_sq = (238, 238, 210)
@@ -52,10 +56,40 @@ font = pygame.font.Font('freesansbold.ttf', 32)
 text = font.render('CHECK MATE', True, (255,0,0),(255,255,0))
 
 
+
+
 textRect = text.get_rect()
+
 
 textRect.center = (WIDTH // 2, HEIGHT // 2)
 
+
+def DrawNoOfMoves():
+    move_text = font.render("Move: " + str(settings.moves), True, (255, 255, 0))
+    move_text_rect = move_text.get_rect()
+    move_text_rect.center = (LEFTGAP / 2, HEIGHT / 2)
+    screen.blit(move_text, move_text_rect)
+
+
+def DrawTimer(t_old):
+    if settings.moves == 0:
+        t_old =  pygame.time.get_ticks()
+    else:
+        Time_Now = pygame.time.get_ticks()
+        Timer_time[settings.moves % 2] -= (Time_Now - t_old)/10000
+        t_old = Time_Now
+
+    timer_b = font.render("Time: " + str(Timer_time[1]//600) + ":"+str((Timer_time[1]%600)/10) , True, (255, 255, 0))
+    timer_b_rect = timer_b.get_rect()
+    timer_b_rect.center = (LEFTGAP / 2, BORDER + BOARDSQ/2)
+    screen.blit(timer_b, timer_b_rect)
+
+    timer_w = font.render("Time: " + str(Timer_time[0]//600) + ":"+str((Timer_time[0]%600)/10), True, (255, 255, 0))
+    timer_w_rect = timer_w.get_rect()
+    timer_w_rect.center = (LEFTGAP / 2, BORDER + BOARDL - BOARDSQ / 2)
+    screen.blit(timer_w, timer_w_rect)
+
+    return t_old
 
 def initialiseboard():
     file = 7
@@ -97,9 +131,12 @@ pygame.display.set_caption("Lets Play Chess")
 
 moves
 def main():
+    setting_init()
     CHECKMATE = False
     settings.moves
     #moves = 0
+    t_old =  pygame.time.get_ticks()
+
     run = True
     clock = pygame.time.Clock()
     drawboard()
@@ -111,30 +148,38 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                if settings.moves%2 == 0:
+                    for selects in selectionbrd:
+                        if selects.rect.collidepoint(event.pos):
+                            print(piece_selected.type)
+                            piece_selected.update(selects.location,selects.castletype)
+                            settings.moves += 1
+                            t = ChessPiece.isCheckStaleMate()
+                            if t:
+                                if t == 10:
+                                    CHECKMATE = True
+                                else:
+                                    print("Stale Mate")
 
-                for selects in selectionbrd:
-                    if selects.rect.collidepoint(event.pos):
-                        print(piece_selected.type)
-                        piece_selected.update(selects.location,selects.castletype)
-                        settings.moves += 1
-                        t = ChessPiece.isCheckStaleMate()
-                        if t:
-                            if t == 10:
-                                CHECKMATE = True
-                            else:
-                                print("Stale Mate")
+                            print(piecearray)
+                    selectionbrd.empty()
+                    for piece in piece_group[settings.moves % 2]:
+                        if piece.rect.collidepoint(event.pos):
+                            piece_selected = piece
+                            moves_array.clear()
+                            piece.get_moves(moves_array)
 
-                        print(piecearray)
-                selectionbrd.empty()
-                for piece in piece_group[settings.moves % 2]:
-                    if piece.rect.collidepoint(event.pos):
-                        piece_selected = piece
-                        moves_array.clear()
-                        piece.get_moves(moves_array)
-
-                        draw_possible_moves()
-
-
+                            draw_possible_moves()
+                if settings.moves%2 == 1:
+                    print("Chess Engine Output : ")
+                    AI_out = ChessEngine.MoveGetterAI()
+                    locn_old = ((AI_out%100)//8, (AI_out%100)%8)
+                    locn_new = ((AI_out // 100)//8, (AI_out // 100)%8)
+                    val_old = piecearray[locn_old]
+                    piecearray[locn_old] = 0
+                    piecearray[locn_new] = val_old
+                    ChessPiece.respriteboard()
+                    settings.moves+=1
 
         drawboard()
         selectionbrd.draw(screen)
@@ -142,6 +187,9 @@ def main():
         white_pieces.draw(screen)
         black_pieces.draw(screen)
 
+        DrawNoOfMoves()
+        t_new = DrawTimer(t_old)
+        t_old = t_new
         if CHECKMATE:
             screen.blit(text, textRect)
 
