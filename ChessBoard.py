@@ -173,6 +173,7 @@ def main():
                 if settings.moves%2 == 1:
                     print("Chess Engine Output : ")
                     AI_out = ChessEngine.MoveGetterAI()
+                    print(AI_out)
                     locn_old = ((AI_out%100)//8, (AI_out%100)%8)
                     locn_new = ((AI_out // 100)//8, (AI_out // 100)%8)
                     val_old = piecearray[locn_old]

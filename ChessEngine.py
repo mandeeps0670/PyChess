@@ -7,11 +7,11 @@ inCheck = False
 
 moves = []
 
-BestGain = -10000
+INfinity = 10000
 
 BestMove = None
 
-Depth_Searched = 7
+Depth_Searched = 3
 
 
 def Evaluation(player):
@@ -276,61 +276,65 @@ def getallmoves(value, locn, arr):
         arr.append(Castlable)
 
 
-def Search(depth, alpha, beta, player):
+# def Search(depth, alpha, beta, player):
+#
+#
+#
+#     if depth == 0:
+#         return Evaluation(player)
+#
+#     print("hELLO")
+#
+#     AI_moves_array = []
+#     for i in range(8):
+#         for j in range(8):
+#             if piecearray[i, j] * (-1 ** player) > 0:
+#                 getallmoves(piecearray[i, j], np.array([i, j]), AI_moves_array)
+#
+#     for move_val in AI_moves_array:
+#         if type(move_val) == str:
+#             CastleMove(move_val)
+#
+#             player += 1
+#             gain = -Search(depth - 1, -beta, -alpha, player)
+#             player -= 1
+#             UndoCastleMove(move_val)
+#         else:
+#             locn_new = ((move_val//100)//8 , (move_val//100)%8)
+#             locn_old = ((move_val % 100) // 8, (move_val % 100) % 8)
+#             pieceval = piecearray[locn_old]
+#             attackval = piecearray[locn_new]
+#             piecearray[locn_old] = 0
+#             piecearray[locn_new] = pieceval
+#
+#
+#             player += 1
+#             # Compute
+#             gain = -Search(depth - 1, -beta, -alpha, player)
+#             player -= 1
+#             # UndoMove
+#             piecearray[tuple(locn_old)] = pieceval
+#             piecearray[tuple(locn_new)] = attackval
+#             if gain >= alpha:
+#                 alpha = gain
+#
+#         if depth == Depth_Searched:
+#             BestMove == move_val
+#
+#             if alpha >= beta:
+#                 return  alpha
+#         return alpha
 
 
-
-    if depth == 0:
-        return Evaluation(player)
-
-    print("hELLO")
-
-    # getallmoves()
-
-    # if len(moves) == 0:
-    #     if inCheck == True:
-    #         return -10000
-    #     else:
-    #         return 0
-    AI_moves_array = []
-    for i in range(8):
-        for j in range(8):
-            if piecearray[i, j] * (-1 ** player) > 0:
-                getallmoves(piecearray[i, j], np.array([i, j]), AI_moves_array)
-
-    for move_val in AI_moves_array:
-        if type(move_val) == str:
-            CastleMove(move_val)
-
-            player += 1
-            gain = -Search(depth - 1, -beta, -alpha, player)
-            player -= 1
-            UndoCastleMove(move_val)
-        else:
-            locn_new = ((move_val//100)//8 , (move_val//100)%8)
-            locn_old = ((move_val % 100) // 8, (move_val % 100) % 8)
-            pieceval = piecearray[locn_old]
-            attackval = piecearray[locn_new]
-            piecearray[locn_old] = 0
-            piecearray[locn_new] = pieceval
-
-
-            player += 1
-            # Compute
-            gain = -Search(depth - 1, -beta, -alpha, player)
-            player -= 1
-            # UndoMove
-            piecearray[tuple(locn_old)] = pieceval
-            piecearray[tuple(locn_new)] = attackval
-
-            if depth == Depth_Searched:
-                return move_val
-
-            if gain >= beta:
-                return beta
-            alpha = max(alpha, gain)
-        #print(alpha)
-        return alpha
+    #     if depth == Depth_Searched:
+    #         return move_val
+    #
+    #     if gain >= beta:
+    #
+    #         return beta
+    # alpha = max(alpha, gain)
+    #     #print(alpha)
+    # return alpha
     # for piece in piece_group[player % 2]:
     #     moves.clear()
     #     piece.get_moves(moves)
@@ -371,6 +375,99 @@ def Search(depth, alpha, beta, player):
     #     alpha = max(alpha,gain)
 
 
+
+
+
+def Search(depth,alpha,beta,player):
+
+
+    if depth == 0:
+      return Evaluation(player)
+
+    AI_moves_array = []
+    for i in range(8):
+        for j in range(8):
+            if piecearray[i, j] * (-1 ** player) > 0:
+                getallmoves(piecearray[i, j], np.array([i, j]),AI_moves_array)
+
+    if len(AI_moves_array)==0:
+        return -INfinity
+
+    if player%2 == 1:
+        print("CalcMax")
+        maxEval = -INfinity
+        for move_val in AI_moves_array:
+            if type(move_val) == str:
+                CastleMove(move_val)
+                player += 1
+                gain = Search(depth - 1, alpha, beta, player)
+                player -= 1
+                UndoCastleMove(move_val)
+            else:
+                    # MakeMove
+                locn_new = ((move_val // 100) // 8, (move_val // 100) % 8)
+                locn_old = ((move_val % 100) // 8, (move_val % 100) % 8)
+                pieceval = piecearray[tuple(locn_old)]
+                attackval = piecearray[tuple(locn_new)]
+                piecearray[tuple(locn_old)] = 0
+                piecearray[tuple(locn_new)] = pieceval
+
+                player += 1
+                # Compute
+                gain = Search(depth - 1, alpha, beta, player)
+                player -= 1
+                # UndoMove
+                piecearray[tuple(locn_old)] = pieceval
+                piecearray[tuple(locn_new)] = attackval
+
+            # maxEval = max(maxEval,gain)
+            if gain >= maxEval:
+                maxEval = gain
+                if depth == Depth_Searched:
+                    BestMove = move_val
+            alpha = max(alpha,gain)
+            if beta <= alpha:
+                break
+        if depth == Depth_Searched:
+            return BestMove
+
+        return maxEval
+
+    else:
+        minEval = INfinity
+        for move_val in AI_moves_array:
+            if type(move_val) == str:
+                CastleMove(move_val)
+                player += 1
+                gain = Search(depth - 1, alpha, beta, player)
+                player -= 1
+                UndoCastleMove(move_val)
+            else:
+                # MakeMove
+                locn_new = ((move_val // 100) // 8, (move_val // 100) % 8)
+                locn_old = ((move_val % 100) // 8, (move_val % 100) % 8)
+                pieceval = piecearray[tuple(locn_old)]
+                attackval = piecearray[tuple(locn_new)]
+                piecearray[tuple(locn_old)] = 0
+                piecearray[tuple(locn_new)] = pieceval
+
+                player += 1
+                # Compute
+                gain = Search(depth - 1, alpha, beta, player)
+                player -= 1
+                # UndoMove
+                piecearray[tuple(locn_old)] = pieceval
+                piecearray[tuple(locn_new)] = attackval
+
+            minEval = min(minEval, gain)
+            beta = min(beta, gain)
+            if beta <= alpha:
+                break
+        return minEval
+
+
+
 def MoveGetterAI():
     print("HEllo")
-    return Search(Depth_Searched, -10000, 10000, 1)
+    return Search(Depth_Searched, -INfinity, INfinity, 1)
+

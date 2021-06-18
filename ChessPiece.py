@@ -164,11 +164,11 @@ def makepseudomove(locn_old,locn_new):
                 attackCalc(temp_attack_array, np.array([i,j]))
             elif  np.sign(piecearray[i,j])* np.sign(pieceval) > 0 and (abs(piecearray[i,j]) == 1000 or abs(piecearray[i,j]) == 1001) :
                 king_locn = (i,j)
-    print(piecearray)
-    print(temp_attack_array)
+    #print(piecearray)
+    #print(temp_attack_array)
     piecearray[tuple(locn_old)]= pieceval
     piecearray[tuple(locn_new)] = attackval
-    print(piecearray)
+    #print(piecearray)
 
 
     if temp_attack_array[king_locn] != 0:
