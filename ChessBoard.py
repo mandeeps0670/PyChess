@@ -211,7 +211,7 @@ def main():
                             draw_possible_moves()
                 if settings.moves%2 == 1:
                     print("Chess Engine Output : ")
-                    if settings.moves < 16:
+                    if settings.moves:
                         str_present = [s for s in Games.games if settings.PGN in s]
                         random.shuffle(str_present)
                         if len(str_present)!=0:
