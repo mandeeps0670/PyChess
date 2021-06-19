@@ -40,6 +40,8 @@ BORDER = 64
 BOARDL = HEIGHT - 2*BORDER
 BOARDSQ = BOARDL/8         
 LEFTGAP = (WIDTH-BOARDL)/2
+
+#FEN = list('1r3rk1/p1pq1ppp/1b4n1/6B1/3P4/2P3P1/PPQ2PbP/RN3RK1')
 FEN = list('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')
 #FEN = list('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R')
 piecearray = np.zeros((8,8),dtype=np.int16)
@@ -63,6 +65,10 @@ screen = pygame.display.set_mode((WIDTH,HEIGHT))
 move_is_castle = False
 
 CHECKMATE = False
+GAMEOVER = False
+LOSS = str()
+
+PGN = str()
 
 PawnTable = np.array([[ 100,50,10,5,0,5,5,0],
                         [ 100,50,10,5,0,-5,10,0],
@@ -93,12 +99,12 @@ BishopTable = np.array([[ -20,-10,-10,-10,-10,-10,-10,-20],
                         [ -20,-10,-10,-10,-10,-10,-10,-20],])
 
 RookTable = np.array([[ 0,5,-5,-5,-5,-5,-5,0],
-                        [ 0,10,0,0,0,0,0,0],
-                        [ 0,10,0,0,0,0,0,0],
+                        [ 0,10,0,0,0,0,0,-10],
+                        [ 0,10,0,0,0,0,0,-10],
                         [ 0,10,0,0,0,0,0,5],
                         [ 0,10,0,0,0,0,0,5],
-                        [ 0,10,0,0,0,0,0,0],
-                        [ 0,10,0,0,0,0,0,0],
+                        [ 0,10,0,0,0,0,0,-10],
+                        [ 0,10,0,0,0,0,0,-10],
                         [ 0,5,-5,-5,-5,-5,-5,0], ])
 
 QueenTable = np.array([[ -20,-10,-10,-5,0,-10,-10,-20],

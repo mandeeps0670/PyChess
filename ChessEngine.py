@@ -44,14 +44,14 @@ def Evaluation(player):
                     val_sum += f * (477 + RookTable[i, c])
                 elif abs(piecearray[i,j] )== 900:
                     #val_sum += piecearray[i, j] + f*QueenTable[i, c]
-                    val_sum += f * (1025 + RookTable[i, c])
+                    val_sum += f * (1025 + QueenTable[i, c])
                 elif abs(piecearray[i,j] )== 1000 or abs(piecearray[i,j] )== 1001:
                     #val_sum += piecearray[i, j] + f*KingTable[i, c]
                     val_sum += f * (1225 + KingTable[i, c])
 
             attack_sum += temp_attack_array[i, j]
 
-    return 0.5*attack_sum + (-1 ** player) * val_sum
+    return val_sum
 
 
 
@@ -160,15 +160,22 @@ def CanCastle(value):
         return False
 
 
-def getallmoves(value, locn, narr,parr):
+def getallmoves(value, locn,larr, narr,parr):
     if value == 100:
         move = np.array([0, 1])
         if inbrd(locn + move) and piecearray[tuple(locn + move)] == 0:
             if makepseudomove(locn, locn + move):
-                narr.append(comp(locn, locn + move))
+                if temp_attack_array[tuple(locn + move)] != 0 :
+                    larr.append(comp(locn, locn + move))
+                else:
+                    narr.append(comp(locn, locn + move))
+
         if locn[1] == 1 and piecearray[tuple(locn + 2 * move)] == 0 and piecearray[tuple(locn + move)] == 0:
             if makepseudomove(locn, locn + 2 * move):
-                parr.append(comp(locn, locn + 2 * move))
+                if temp_attack_array[tuple(locn + 2* move)] != 0:
+                    larr.append(comp(locn, locn + 2*move))
+                else:
+                    narr.append(comp(locn, locn + 2*move))
         move = np.array([1, 1])
         if inbrd(locn + move) and piecearray[tuple(locn + move)] < 0:
             if makepseudomove(locn, locn + move):
@@ -181,11 +188,17 @@ def getallmoves(value, locn, narr,parr):
         move = np.array([0, -1])
         if inbrd(locn + move) and piecearray[tuple(locn + move)] == 0:
             if makepseudomove(locn, locn + move):
-                narr.append(comp(locn, locn + move))
+                if temp_attack_array[tuple(locn + move)] != 0:
+                    larr.append(comp(locn, locn + move))
+                else:
+                    narr.append(comp(locn, locn + move))
 
         if locn[1] == 6 and piecearray[tuple(locn + 2 * move)] == 0 and piecearray[tuple(locn + move)] == 0:
             if makepseudomove(locn, locn + 2 * move):
-                parr.append(comp(locn, locn + 2 * move))
+                if temp_attack_array[tuple(locn + 2 * move)] != 0:
+                    larr.append(comp(locn, locn + 2 * move))
+                else:
+                    narr.append(comp(locn, locn + 2 * move))
         move = np.array([1, -1])
         if inbrd(locn + move) and piecearray[tuple(locn + move)] > 0:
             if makepseudomove(locn, locn + move):
@@ -206,8 +219,11 @@ def getallmoves(value, locn, narr,parr):
                 if makepseudomove(locn, locn + move):
                     if piecearray[tuple(locn + move)] * np.sign(value) < 0:
                         parr.append(comp(locn, locn + move))
+                    elif temp_attack_array[tuple(locn +  move)] != 0:
+                        larr.append(comp(locn, locn + move))
                     else:
                         narr.append(comp(locn, locn + move))
+
 
     elif value == 300 or value == -300:
         moves = np.array([
@@ -217,7 +233,10 @@ def getallmoves(value, locn, narr,parr):
 
                 if inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] == 0:
                     if makepseudomove(locn, locn + k * move):
-                        narr.append(comp(locn, locn + k * move))
+                        if temp_attack_array[tuple(locn + k* move)] != 0:
+                            larr.append(comp(locn, locn + k * move))
+                        else:
+                            narr.append(comp(locn, locn + k * move))
                 elif inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] * np.sign(value) < 0:
                     if makepseudomove(locn, locn + k * move):
                         parr.append(comp(locn, locn + k * move))
@@ -233,7 +252,10 @@ def getallmoves(value, locn, narr,parr):
             for k in range(1, 8):
                 if inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] == 0:
                     if makepseudomove(locn, locn + k * move):
-                        narr.append(comp(locn, locn + k * move))
+                        if temp_attack_array[tuple(locn + k * move)] != 0:
+                            larr.append(comp(locn, locn + k * move))
+                        else:
+                            narr.append(comp(locn, locn + k * move))
                 elif inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] * np.sign(value) < 0:
                     if makepseudomove(locn, locn + k * move):
                         parr.append(comp(locn, locn + k * move))
@@ -250,7 +272,10 @@ def getallmoves(value, locn, narr,parr):
             for k in range(1, 8):
                 if inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] == 0:
                     if makepseudomove(locn, locn + k * move):
-                        narr.append(comp(locn, locn + k * move))
+                        if temp_attack_array[tuple(locn + k * move)] != 0:
+                            larr.append(comp(locn, locn + k * move))
+                        else:
+                            narr.append(comp(locn, locn + k * move))
                 elif inbrd(locn + k * move) and piecearray[tuple(locn + k * move)] * np.sign(value) < 0:
                     if makepseudomove(locn, locn + k * move):
                         parr.append(comp(locn, locn + k * move))
@@ -271,7 +296,7 @@ def getallmoves(value, locn, narr,parr):
 
     Castlable = CanCastle(value)
     if Castlable:
-        parr.append(Castlable)
+        narr.append(Castlable)
 
 
 
@@ -287,19 +312,26 @@ def Search(depth, alpha, beta, player,prevBest = None):
 
     AI_normal_moves_array = []
     AI_moves_array = []
-    if prevBest != None:
-        AI_moves_array.append(prevBest)
+    Low_Priority_AI_Move_array = []
+
     for i in range(8):
         for j in range(8):
             if piecearray[i, j] * (-1 ** player) > 0:
-                getallmoves(piecearray[i, j], np.array([i, j]),AI_normal_moves_array,AI_moves_array)
+                getallmoves(piecearray[i, j], np.array([i, j]),Low_Priority_AI_Move_array,AI_normal_moves_array,AI_moves_array)
 
+    # random.shuffle(Low_Priority_AI_Move_array)
+    # random.shuffle(AI_normal_moves_array)
+    # random.shuffle(AI_moves_array)
 
-    AI_moves_array = AI_moves_array + AI_normal_moves_array
+    AI_moves_array = AI_moves_array + AI_normal_moves_array + Low_Priority_AI_Move_array
+    if prevBest != None:
+        AI_moves_array = [prevBest] + AI_moves_array
+
+    # random.shuffle(AI_moves_array)
 
 
     if len(AI_moves_array) == 0:
-        return 'c'
+        return -INfinity
 
     random.shuffle(AI_moves_array)
     if player%2 == 1:
@@ -319,7 +351,10 @@ def Search(depth, alpha, beta, player,prevBest = None):
                 attackval = piecearray[tuple(locn_new)]
                 piecearray[tuple(locn_old)] = 0
                 piecearray[tuple(locn_new)] = pieceval
-
+                if pieceval == 100 and locn_new[1] == 7:
+                    piecearray[tuple(locn_new)] = 900
+                elif pieceval == -100 and locn_new[1] == 0:
+                    piecearray[tuple(locn_new)] = -900
                 player += 1
                 # Compute
                 gain = Search(depth - 1, alpha, beta, player)
@@ -381,17 +416,24 @@ def MoveGetterAI():
     print(settings.calc)
 
     seconds = time.time()
-    if settings.moves < 8:
-        return Search(2, -INfinity, INfinity, 1)
-    else:
-        i = 1
-        bstmv = Search(i, -INfinity, INfinity, 1)
-        while time.time() - seconds < 1:
-            i+=1
-            newbstmv = Search(i, -INfinity, INfinity, 1,bstmv)
-            bstmv = newbstmv
-            if type(bstmv) == str:
-                break
+    # if settings.moves < 8:
+    #     return Search(2, -INfinity, INfinity, 1)
+    # else:
+    i = 2
+    times = time.time()
+    bstmv = Search(i, -INfinity, INfinity, 1)
+    timeend = time.time()
+    print(timeend-times)
+    while time.time() - seconds < 2:
+        if bstmv == -INfinity:
+            break
+        i+=1
+        times = time.time()
+        newbstmv = Search(i, -INfinity, INfinity, 1,bstmv)
+        timeend = time.time()
+        print(timeend - times)
+        bstmv = newbstmv
 
-        return bstmv
+
+    return bstmv
 

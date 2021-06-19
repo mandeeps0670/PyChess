@@ -1,9 +1,10 @@
+import random
 
 import pygame
 import os
 import numpy as np
 from pygame.constants import MOUSEBUTTONDOWN
-
+import Games
 import ChessEngine
 import ChessPiece
 import settings
@@ -49,6 +50,7 @@ light_sq = (238, 238, 210)
 flag = 0
 pygame.init()
 
+
 piece_selected = None
 
 
@@ -71,6 +73,12 @@ def gameover_message(loss):
     move_text_rect = Loss_Text.get_rect()
     move_text_rect.center = (WIDTH / 2, HEIGHT / 2)
     screen.blit(Loss_Text, move_text_rect)
+
+def AI_process_Text():
+    move_text = font.render("Processing", True, (255, 255, 0))
+    move_text_rect = move_text.get_rect()
+    move_text_rect.center = (BOARDL+ 3*LEFTGAP / 2, HEIGHT / 2)
+    screen.blit(move_text, move_text_rect)
 
 def DrawTimer(t_old):
     if settings.moves == 0:
@@ -127,6 +135,29 @@ def draw_possible_moves():
         selectionbrd.add(possible_move(move))
 
 
+def Chess_ai():
+    AI_out = ChessEngine.MoveGetterAI()
+    print(AI_out)
+    if AI_out == -ChessEngine.INfinity:
+        settings.GAMEOVER = True
+        settings.LOSS = "You Won"
+    elif type(AI_out) == str:
+        ChessEngine.CastleMove(AI_out)
+        ChessPiece.make_png(0, 0, AI_out)
+
+    else:
+        locn_old = ((AI_out % 100) // 8, (AI_out % 100) % 8)
+        locn_new = ((AI_out // 100) // 8, (AI_out // 100) % 8)
+        ChessPiece.make_png(locn_old, locn_new, 0)
+        val_old = piecearray[locn_old]
+        piecearray[locn_old] = 0
+        piecearray[locn_new] = val_old
+        if val_old == 100 and locn_new[1] == 7:
+            piecearray[tuple(locn_new)] = 900
+        elif val_old == -100 and locn_new[1] == 0:
+            piecearray[tuple(locn_new)] = -900
+    ChessPiece.respriteboard()
+    settings.moves += 1
 
 pygame.display.set_caption("Lets Play Chess")
 
@@ -135,7 +166,7 @@ pygame.display.set_caption("Lets Play Chess")
 def main():
     setting_init()
     CHECKMATE = False
-    GAMEOVER = False
+
     settings.moves
     #moves = 0
     t_old =  pygame.time.get_ticks()
@@ -155,16 +186,19 @@ def main():
                     for selects in selectionbrd:
                         if selects.rect.collidepoint(event.pos):
                             print(piece_selected.type)
+                            ChessPiece.make_png(piece_selected.location,selects.location, selects.castletype)
+                            print(settings.PGN)
                             piece_selected.update(selects.location,selects.castletype)
+                            AI_process_Text()
                             settings.moves += 1
                             t = ChessPiece.isCheckStaleMate()
                             if t:
                                 if t == 10:
-                                    GAMEOVER = True
-                                    LOSS = "You Lost"
+                                    settings.GAMEOVER = True
+                                    settings.LOSS = "You Lost"
                                 else:
-                                    GAMEOVER = True
-                                    LOSS = "Stale Mate"
+                                    settings.GAMEOVER = True
+                                    settings.LOSS = "Stale Mate"
 
                             print(piecearray)
                     selectionbrd.empty()
@@ -177,22 +211,29 @@ def main():
                             draw_possible_moves()
                 if settings.moves%2 == 1:
                     print("Chess Engine Output : ")
-                    AI_out = ChessEngine.MoveGetterAI()
-                    print(AI_out)
-                    if AI_out == 'c':
-                        GAMEOVER = True
-                        LOSS ="You Won"
-                    elif type(AI_out) == str:
-                        ChessEngine.CastleMove(AI_out)
-
+                    if settings.moves < 16:
+                        str_present = [s for s in Games.games if settings.PGN in s]
+                        random.shuffle(str_present)
+                        if len(str_present)!=0:
+                            for string in str_present:
+                                if string.find(settings.PGN) == 0:
+                                    print(string)
+                                    pgn_copy = settings.PGN.split(" ")
+                                    print(pgn_copy)
+                                    string = string.split(" ")
+                                    print(string)
+                                    if ChessPiece.makebookmove(string[len(pgn_copy)-1]):
+                                        settings.PGN += string[len(pgn_copy) - 1]  + " "
+                                        settings.moves+=1
+                                        ChessPiece.respriteboard()
+                                        break
+                                    print(string[len(pgn_copy)-1]  + " ")
+                            else:
+                                Chess_ai()
+                        else:
+                            Chess_ai()
                     else:
-                        locn_old = ((AI_out%100)//8, (AI_out%100)%8)
-                        locn_new = ((AI_out // 100)//8, (AI_out // 100)%8)
-                        val_old = piecearray[locn_old]
-                        piecearray[locn_old] = 0
-                        piecearray[locn_new] = val_old
-                    ChessPiece.respriteboard()
-                    settings.moves+=1
+                        Chess_ai()
 
         drawboard()
         selectionbrd.draw(screen)
@@ -203,8 +244,8 @@ def main():
         DrawNoOfMoves()
         # t_new = DrawTimer(t_old)
         # t_old = t_new
-        if GAMEOVER == True:
-            gameover_message(LOSS)
+        if settings.GAMEOVER == True:
+            gameover_message(settings.LOSS)
 
 
         pygame.display.update()

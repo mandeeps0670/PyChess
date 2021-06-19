@@ -1,6 +1,8 @@
 import pygame
 import numpy as np
 import os
+
+import ChessEngine
 import settings
 from settings import *
 
@@ -511,3 +513,102 @@ def isCheckStaleMate():
         return 10
     else:
         return 2
+
+
+def make_png(locn_old,locn_new,castle):
+    if type(castle) == str:
+        if castle == 'k' or  castle == 'K':
+            settings.PGN += "O-O "
+        elif castle == 'q' or  castle == 'Q':
+            settings.PGN += "O-O-O "
+
+    else:
+        pice_type = piecetyp(abs(piecearray[tuple(locn_old)]))
+        char = 'a'
+        move_to_rank  = chr(ord(char[0]) + locn_new[0])
+        move_to_file = str(locn_new[1] + 1)
+        if pice_type == 'P' or pice_type == 'p':
+            if piecearray[tuple(locn_new)] != 0:
+                old_rank = chr(int(char[0]) + locn_old[0])
+                settings.PGN += old_rank + "x" + move_to_rank + move_to_file + " "
+            else:
+                settings.PGN += move_to_rank + move_to_file + " "
+        else:
+            if piecearray[tuple(locn_new)] != 0:
+                settings.PGN += pice_type + "x" + move_to_rank + move_to_file + " "
+            else:
+                settings.PGN += pice_type +  move_to_rank + move_to_file + " "
+
+
+def makebookmove(move):
+    if move == "O-O":
+        ChessEngine.CastleMove('k')
+        return True
+    elif move == "O-O-O":
+        ChessEngine.CastleMove('q')
+        return True
+    elif move[0].isupper():
+        pic = pieceval(move[0])
+        t = 1
+        if move[t] == "x" or move[t+1].islower():
+            t+=1
+        rank  = move[t]
+        file = move[t+1]
+        char = 'a'
+        rank_int = int(ord(rank)-ord(char[0]))
+        file_int = int(file) - 1
+
+        loc_new = 8*rank_int + file_int
+
+        move_pgn = []
+        for i in range(8):
+            for j in range(8):
+                if abs(piecearray[i,j] + pic) < 2:
+                    ChessEngine.getallmoves(piecearray[i,j],np.array([i,j]),move_pgn,move_pgn,move_pgn)
+                    for move in move_pgn:
+                        if move/100 == loc_new:
+                            locn_old = ((move % 100) // 8, (move % 100) % 8)
+                            locn_new = ((move // 100) // 8, (move // 100) % 8)
+                            val_old = piecearray[locn_old]
+                            piecearray[locn_old] = 0
+                            piecearray[locn_new] = val_old
+                            print(piecearray)
+                            return True
+
+    elif move[0].islower():
+        if move[1] == "x":
+            ranko = move[0]
+            rankn = move[2]
+            file = move[3]
+            char = 'a'
+            rank_old = int(ord(ranko) - ord(char[0]))
+            rank_new = int(ord(rankn) - ord(char[0]))
+
+            file_new = int(file) - 1
+            file_old = int(file)
+            if piecearray[rank_new,file_new]==0:
+                #En-pessant
+                piecearray[rank_new, file_new] = piecearray[rank_old,file_old]
+                piecearray[rank_old, file_old] = 0
+                piecearray[rank_new, file_old] = 0
+            else:
+                piecearray[rank_new, file_new] = piecearray[rank_old, file_old]
+                piecearray[rank_old, file_old] = 0
+            return True
+        else:
+            rank = move[0]
+            file = move[1]
+            char = 'a'
+            rank_o= int(ord(rank) - ord(char[0]))
+            file_o = int(file) - 1
+            print(piecearray[rank_o, 6])
+            if file_o == 4 and piecearray[rank_o,5] == 0:
+                piecearray[rank_o, 4] = piecearray[rank_o, 6]
+                piecearray[rank_o, 6] = 0
+                print(piecearray)
+                return True
+            else:
+                piecearray[rank_o, file_o] = piecearray[rank_o, file_o+1]
+                piecearray[rank_o, file_o+1] = 0
+                return True
+    return False
