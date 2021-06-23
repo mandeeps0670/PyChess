@@ -516,6 +516,8 @@ def isCheckStaleMate():
 
 
 def make_png(locn_old,locn_new,castle):
+    if settings.moves%2 == 0:
+        settings.PGN += str(int(settings.moves/2 + 1)) + "."
     if type(castle) == str:
         if castle == 'k' or  castle == 'K':
             settings.PGN += "O-O "

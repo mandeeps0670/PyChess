@@ -4,7 +4,7 @@
 
 A chess Bot made in python with the help of PyGame. This chess bot uses Min-Max search algorithm with alpha beta pruning and iterative deepening to find the best move to play against its opponent.
 
-It also has a large data of 7000 or so games played by GMs so that it can make the optimal opening moves.
+It also uses a large data set of 1,30,000+ games played by GMs so that it can make the optimal opening moves.
 
 The chess board supports moves like pawn-promotion, double pawn push, castling on king and queen side, and en passant from black's side.
 

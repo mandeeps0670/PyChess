@@ -4,12 +4,13 @@ import pygame
 import os
 import numpy as np
 from pygame.constants import MOUSEBUTTONDOWN
-import Games
+#import Games
 import ChessEngine
 import ChessPiece
 import settings
 from settings import *
 from ChessPiece import typepiece, possible_move
+import PGNfile
 
 
 
@@ -48,6 +49,7 @@ FPS = 15
 drk_sq = (118, 150, 86)
 light_sq = (238, 238, 210)
 flag = 0
+
 pygame.init()
 
 
@@ -166,7 +168,7 @@ pygame.display.set_caption("Lets Play Chess")
 def main():
     setting_init()
     CHECKMATE = False
-
+    book_move_possible = True
     settings.moves
     #moves = 0
     t_old =  pygame.time.get_ticks()
@@ -210,30 +212,34 @@ def main():
 
                             draw_possible_moves()
                 if settings.moves%2 == 1:
-                    print("Chess Engine Output : ")
-                    if settings.moves:
-                        str_present = [s for s in Games.games if settings.PGN in s]
+                    print(settings.PGN)
+                    if book_move_possible:
+                        print("Chess Engine Output : ")
+                        str_present = [s for s in PGNfile.games if settings.PGN in s]
                         random.shuffle(str_present)
                         if len(str_present)!=0:
                             for string in str_present:
-                                if string.find(settings.PGN) == 0:
-                                    print(string)
-                                    pgn_copy = settings.PGN.split(" ")
-                                    print(pgn_copy)
-                                    string = string.split(" ")
-                                    print(string)
-                                    if ChessPiece.makebookmove(string[len(pgn_copy)-1]):
-                                        settings.PGN += string[len(pgn_copy) - 1]  + " "
-                                        settings.moves+=1
-                                        ChessPiece.respriteboard()
-                                        break
-                                    print(string[len(pgn_copy)-1]  + " ")
+                                print(string)
+                                pgn_copy = settings.PGN.split(" ")
+                                print(pgn_copy)
+                                string = string.split(" ")
+                                print(string)
+                                if ChessPiece.makebookmove(string[len(pgn_copy)-1]):
+                                    settings.PGN += string[len(pgn_copy) - 1]  + " "
+                                    settings.moves+=1
+                                    ChessPiece.respriteboard()
+                                    break
+                                print(string[len(pgn_copy)-1]  + " ")
                             else:
+                                book_move_possible = False
                                 Chess_ai()
                         else:
+                            book_move_possible = False
                             Chess_ai()
                     else:
+                        print("Chess Engine Output : ")
                         Chess_ai()
+                    
 
         drawboard()
         selectionbrd.draw(screen)
