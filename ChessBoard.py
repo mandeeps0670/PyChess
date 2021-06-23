@@ -10,7 +10,7 @@ import ChessPiece
 import settings
 from settings import *
 from ChessPiece import typepiece, possible_move
-import PGNfile
+#import PGNfile
 
 
 
@@ -169,6 +169,11 @@ def main():
     setting_init()
     CHECKMATE = False
     book_move_possible = True
+    pgn_file_1 = open("PGNfile1.txt",'r')
+    pgn_file_2 = open("PGNfile2.txt",'r')
+    
+    game_lines = pgn_file_1.readlines() + pgn_file_2.readlines()
+    
     settings.moves
     #moves = 0
     t_old =  pygame.time.get_ticks()
@@ -215,7 +220,7 @@ def main():
                     print(settings.PGN)
                     if book_move_possible:
                         print("Chess Engine Output : ")
-                        str_present = [s for s in PGNfile.games if settings.PGN in s]
+                        str_present = [s for s in game_lines if settings.PGN in s]
                         random.shuffle(str_present)
                         if len(str_present)!=0:
                             for string in str_present:
