@@ -9,7 +9,7 @@ import ChessEngine
 import ChessPiece
 import settings
 from settings import *
-from ChessPiece import typepiece, possible_move
+from ChessPiece import typepiece, possible_move,playbutton
 #import PGNfile
 
 
@@ -52,13 +52,15 @@ flag = 0
 
 pygame.init()
 
-
+move_sound = pygame.mixer.Sound('Sound\move.wav')
 piece_selected = None
 
 
 font = pygame.font.Font('freesansbold.ttf', 32)
+pygame.display.set_caption("Lets Play Chess")
+play_button = pygame.image.load('Images\Chess_Play.png')
 
-
+pygame.display.set_icon(play_button)
 
 
 def DrawNoOfMoves():
@@ -136,6 +138,12 @@ def draw_possible_moves():
     for move in moves_array:
         selectionbrd.add(possible_move(move))
 
+def makemainmenu():
+    Background_img = pygame.image.load('Images\BackgroundR.png')
+    Play_img = pygame.image.load('Images\Chess_PlayR.png')
+    screen.blit(Background_img,(0,0))
+    #screen.blit(Play_img,(WIDTH/10,HEIGHT/2))
+    buttongrp.add(playbutton((WIDTH/4,HEIGHT/2)))
 
 def Chess_ai():
     AI_out = ChessEngine.MoveGetterAI()
@@ -160,14 +168,16 @@ def Chess_ai():
             piecearray[tuple(locn_new)] = -900
     ChessPiece.respriteboard()
     settings.moves += 1
+    move_sound.play()
 
-pygame.display.set_caption("Lets Play Chess")
+
 
 
 
 def main():
     setting_init()
     CHECKMATE = False
+    Game_Play = False
     book_move_possible = True
     pgn_file_1 = open("PGNfile1.txt",'r')
     pgn_file_2 = open("PGNfile2.txt",'r')
@@ -175,20 +185,24 @@ def main():
     game_lines = pgn_file_1.readlines() + pgn_file_2.readlines()
     
     settings.moves
+    
+
+    
     #moves = 0
     t_old =  pygame.time.get_ticks()
 
     run = True
     clock = pygame.time.Clock()
-    drawboard()
+    #drawboard()
     initialiseboard()
+    makemainmenu()
     # drawpiece()
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            if event.type == MOUSEBUTTONDOWN and event.button == 1:
+            if event.type == MOUSEBUTTONDOWN and event.button == 1 and Game_Play:
                 if settings.moves%2 == 0:
                     for selects in selectionbrd:
                         if selects.rect.collidepoint(event.pos):
@@ -198,6 +212,9 @@ def main():
                             piece_selected.update(selects.location,selects.castletype)
                             AI_process_Text()
                             settings.moves += 1
+
+                            move_sound.play()
+
                             t = ChessPiece.isCheckStaleMate()
                             if t:
                                 if t == 10:
@@ -233,6 +250,7 @@ def main():
                                     settings.PGN += string[len(pgn_copy) - 1]  + " "
                                     settings.moves+=1
                                     ChessPiece.respriteboard()
+                                    move_sound.play()
                                     break
                                 print(string[len(pgn_copy)-1]  + " ")
                             else:
@@ -244,20 +262,35 @@ def main():
                     else:
                         print("Chess Engine Output : ")
                         Chess_ai()
-                    
 
-        drawboard()
-        selectionbrd.draw(screen)
+            elif event.type == MOUSEBUTTONDOWN and Game_Play == False:
+                    for button in buttongrp:
+                        print("Hi")
+                        if button.rect.collidepoint(event.pos):
+                            Game_Play = True
+                            strt_sound = pygame.mixer.Sound('Sound\strt.wav')
+                            strt_sound.play()
 
-        white_pieces.draw(screen)
-        black_pieces.draw(screen)
+            elif Game_Play == False and event.type == pygame.KEYDOWN:
+                Game_Play = True
+                strt_sound = pygame.mixer.Sound('Sound\strt.wav')
+                strt_sound.play()
 
-        DrawNoOfMoves()
-        # t_new = DrawTimer(t_old)
-        # t_old = t_new
-        if settings.GAMEOVER == True:
-            gameover_message(settings.LOSS)
+        if Game_Play :
+            drawboard()
+            selectionbrd.draw(screen)
 
+            white_pieces.draw(screen)
+            black_pieces.draw(screen)
+
+            DrawNoOfMoves()
+            # t_new = DrawTimer(t_old)
+            # t_old = t_new
+            if settings.GAMEOVER == True:
+                gameover_message(settings.LOSS)
+        else:
+
+            buttongrp.draw(screen)
 
         pygame.display.update()
 

@@ -16,6 +16,7 @@ def setting_init():
     global  whiteincheck
     global blackincheck
     global CHECKMATE
+    global buttongrp
     CHECKMATE = False
 
 
@@ -35,7 +36,7 @@ moves = 0
 
 
 HEIGHT = 720
-WIDTH = 1000
+WIDTH = 1080
 BORDER = 64
 BOARDL = HEIGHT - 2*BORDER
 BOARDSQ = BOARDL/8         
@@ -55,6 +56,8 @@ black_pieces = pygame.sprite.Group()
 piece_group = [white_pieces,black_pieces]
 
 selectionbrd = pygame.sprite.Group()
+
+buttongrp = pygame.sprite.Group()
 
 calc = 0
 

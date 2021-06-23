@@ -614,3 +614,16 @@ def makebookmove(move):
                 piecearray[rank_o, file_o+1] = 0
                 return True
     return False
+
+
+
+class playbutton(pygame.sprite.Sprite):
+    def __init__(self,location):
+        pygame.sprite.Sprite.__init__(self)
+        self.location = location
+        self.img = pygame.image.load(os.path.join('Images', 'Chess_Play.png'))
+        self.image = pygame.transform.scale(self.img, (314,314))
+        self.image.convert()
+        self.rect = self.image.get_rect()
+        self.rect.center = self.location
+    
