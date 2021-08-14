@@ -1,6 +1,7 @@
 # PyChess
 
-![Chess Board](Images/SS.png?raw=true "Title")
+![Chess Board](Images/strt.png?raw=true "Start Menu")
+![Chess Board](Images/SS.png?raw=true "Chess Board")
 
 A chess Bot made in python with the help of PyGame. This chess bot uses Min-Max search algorithm with alpha beta pruning and iterative deepening to find the best move to play against its opponent.
 

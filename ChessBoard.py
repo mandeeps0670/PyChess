@@ -52,13 +52,13 @@ flag = 0
 
 pygame.init()
 
-move_sound = pygame.mixer.Sound('Sound\move.wav')
+move_sound = pygame.mixer.Sound(os.path.join('Sound', 'strt.wav'))
 piece_selected = None
 
 
 font = pygame.font.Font('freesansbold.ttf', 32)
 pygame.display.set_caption("Lets Play Chess")
-play_button = pygame.image.load('Images\Chess_Play.png')
+play_button = pygame.image.load(os.path.join('Images', 'Chess_Play.png'))
 
 pygame.display.set_icon(play_button)
 
@@ -139,8 +139,7 @@ def draw_possible_moves():
         selectionbrd.add(possible_move(move))
 
 def makemainmenu():
-    Background_img = pygame.image.load('Images\BackgroundR.png')
-    Play_img = pygame.image.load('Images\Chess_PlayR.png')
+    Background_img = pygame.image.load(os.path.join('Images', 'BackgroundR.png'))
     screen.blit(Background_img,(0,0))
     #screen.blit(Play_img,(WIDTH/10,HEIGHT/2))
     buttongrp.add(playbutton((WIDTH/4,HEIGHT/2)))
@@ -168,7 +167,7 @@ def Chess_ai():
             piecearray[tuple(locn_new)] = -900
     ChessPiece.respriteboard()
     settings.moves += 1
-    move_sound.play()
+    #move_sound.play()
 
 
 
@@ -283,12 +282,12 @@ def main():
                         print("Hi")
                         if button.rect.collidepoint(event.pos):
                             Game_Play = True
-                            strt_sound = pygame.mixer.Sound('Sound\strt.wav')
+                            strt_sound = pygame.mixer.Sound(os.path.join('Sound','move.wav'))
                             strt_sound.play()
 
             elif Game_Play == False and event.type == pygame.KEYDOWN:
                 Game_Play = True
-                strt_sound = pygame.mixer.Sound('Sound\strt.wav')
+                strt_sound = pygame.mixer.Sound(os.path.join('Sound','move.wav'))
                 strt_sound.play()
 
         if Game_Play :
