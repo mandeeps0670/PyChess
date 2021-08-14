@@ -531,7 +531,7 @@ def make_png(locn_old,locn_new,castle):
         move_to_file = str(locn_new[1] + 1)
         if pice_type == 'P' or pice_type == 'p':
             if piecearray[tuple(locn_new)] != 0:
-                old_rank = chr(int(char[0]) + locn_old[0])
+                old_rank = chr(ord(char[0]) + locn_old[0])
                 settings.PGN += old_rank + "x" + move_to_rank + move_to_file + " "
             else:
                 settings.PGN += move_to_rank + move_to_file + " "
@@ -558,17 +558,18 @@ def makebookmove(move):
         file = move[t+1]
         char = 'a'
         rank_int = int(ord(rank)-ord(char[0]))
-        file_int = int(file) - 1
-
+        file_int = int(file)-1
+        print(piecearray)
         loc_new = 8*rank_int + file_int
 
-        move_pgn = []
+
         for i in range(8):
             for j in range(8):
                 if abs(piecearray[i,j] + pic) < 2:
+                    move_pgn = []
                     ChessEngine.getallmoves(piecearray[i,j],np.array([i,j]),move_pgn,move_pgn,move_pgn)
                     for move in move_pgn:
-                        if move/100 == loc_new:
+                        if type(move) != str and move//100 == loc_new:
                             locn_old = ((move % 100) // 8, (move % 100) % 8)
                             locn_new = ((move // 100) // 8, (move // 100) % 8)
                             val_old = piecearray[locn_old]

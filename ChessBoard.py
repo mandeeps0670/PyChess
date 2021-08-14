@@ -79,10 +79,10 @@ def gameover_message(loss):
     screen.blit(Loss_Text, move_text_rect)
 
 def AI_process_Text():
-    move_text = font.render("Processing", True, (255, 255, 0))
-    move_text_rect = move_text.get_rect()
-    move_text_rect.center = (BOARDL+ 3*LEFTGAP / 2, HEIGHT / 2)
-    screen.blit(move_text, move_text_rect)
+    ai_text = font.render("Processing", True, (255, 255, 0))
+    ai_text_rect = ai_text.get_rect()
+    ai_text_rect.center = (BOARDL+ 3*LEFTGAP / 2, HEIGHT / 2)
+    screen.blit(ai_text, ai_text_rect)
 
 def DrawTimer(t_old):
     if settings.moves == 0:
@@ -210,8 +210,23 @@ def main():
                             ChessPiece.make_png(piece_selected.location,selects.location, selects.castletype)
                             print(settings.PGN)
                             piece_selected.update(selects.location,selects.castletype)
-                            AI_process_Text()
+                            
                             settings.moves += 1
+                            
+                            if Game_Play :
+                                drawboard()
+                                selectionbrd.draw(screen)
+
+                                white_pieces.draw(screen)
+                                black_pieces.draw(screen)
+
+                                DrawNoOfMoves()
+                                AI_process_Text()
+                                # t_new = DrawTimer(t_old)
+                                # t_old = t_new
+                                if settings.GAMEOVER == True:
+                                    gameover_message(settings.LOSS)
+                            pygame.display.update()
 
                             move_sound.play()
 

@@ -29,7 +29,7 @@ def Evaluation(player):
                 else:
                     c = 7-j
                     f=-1
-                82, 337, 365, 477, 1025, 0
+                # 82, 337, 365, 477, 1025, 0
                 if abs(piecearray[i,j]) == 100:
                     #val_sum += piecearray[i, j] + 2*f*PawnTable[i,c]
                     val_sum += f*(82+ PawnTable[i,c])
@@ -49,8 +49,8 @@ def Evaluation(player):
                     #val_sum += piecearray[i, j] + f*KingTable[i, c]
                     val_sum += f * (1225 + KingTable[i, c])
 
-            attack_sum += temp_attack_array[i, j]
-
+            #attack_sum += temp_attack_array[i, j]
+    # print(val_sum)
     return val_sum
 
 
@@ -372,6 +372,7 @@ def Search(depth, alpha, beta, player,prevBest = None):
             if beta <= alpha:
                 break
         if player == 1:
+            # print(maxEval , alpha , beta)
             return BestMove
 
         return maxEval
@@ -419,7 +420,7 @@ def MoveGetterAI():
     # if settings.moves < 8:
     #     return Search(2, -INfinity, INfinity, 1)
     # else:
-    i = 2
+    i = 3
     times = time.time()
     bstmv = Search(i, -INfinity, INfinity, 1)
     timeend = time.time()
